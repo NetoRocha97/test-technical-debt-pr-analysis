@@ -1,0 +1,20 @@
+============================================================
+RQ3
+============================================================
+
+Research Question:
+What are the primary reasons that suggestions for resolving Technical Debt issues are rejected?
+
+Total rejected PRs analysed: 61
+
+Distribution of rejection reasons:
+
+AUTHOR_DISAGREES: 27 (44.26%)
+NOT_NECESSARY: 16 (26.23%)
+OUT_OF_SCOPE: 11 (18.03%)
+TOO_COMPLEX: 4 (6.56%)
+ALREADY_ADDRESSED: 2 (3.28%)
+UNKNOWN: 1 (1.64%)
+
+Most frequent rejection reason:
+AUTHOR_DISAGREES (27 PRs - 44.26%)

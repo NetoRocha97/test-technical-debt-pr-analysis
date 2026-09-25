@@ -1,0 +1,1125 @@
+[
+  {
+    "repo": "accumulo",
+    "pr_number": 1531,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 384757398,
+          "author": "ctubbsii",
+          "comment": "I think these might be the only places we could use try-with-resources (I only fixed these because they generated warnings). But yes, separate issue, if there's anything else to be done with this."
+        },
+        {
+          "comment_id": 384757398,
+          "author": "milleruntime",
+          "comment": "I looked again and it looks like this is the only use of this object other than ZooSession (where we are manually closing) so disregard. "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1779,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 524434634,
+          "author": "ctubbsii",
+          "comment": "We can't use `size()` (either on the `Map` or its `entrySet()`), because that is only an approximation when working with Guava Cache objects. We need the actual count, which we can get by iterating over the entry set. See https://guava.dev/releases/21.0/api/docs/com/google/common/cache/Cache.html#size--"
+        },
+        {
+          "comment_id": 524435438,
+          "author": "ctubbsii",
+          "comment": "Yeah, the IDE is wrong in this case. See my other comment."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1925,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 574474818,
+          "author": "ctubbsii",
+          "comment": "> If you have to add the timeout, doesn't this mean the test is potentially flaky?\r\n\r\nHaving a timeout doesn't mean it's flaky... it just makes it easier to catch if it becomes flaky, and won't hold up the build indefinitely if it does. I ran this test dozens of times and it always finished successfully in less than a second.\r\n\r\n> Would it be better to have the test pass in the unlikely event that System.gc doesn't eventually cause garbage collection to occur?\r\n\r\nIf we did that, then this test wouldn't be useful at all, because it would never detect an incorrect implementation (such as one that kept a strong reference to the key) that would prevent garbage collection."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2608,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 848838759,
+          "author": "ctubbsii",
+          "comment": "The current code used these folder names. It's probably best to just leave them as-is, since everything still works as expected, and such a change would be unrelated to the actual conversion to the jupiter engine."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2794,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 910355545,
+          "author": "dlmarion",
+          "comment": "It's likely that the test thread will see the configuration change, it's the fact that the TabletServer does *not* see the change before the BatchWriter is used. I might have to move this one test to its own class."
+        },
+        {
+          "comment_id": 910355545,
+          "author": "EdColeman",
+          "comment": "Checking if the property is set will only verify that the change has propagated locally. Each process will have its own cache and sets of watchers on the property node.  So checking if the property change has propagated in one process does not provide any guarantees that all of the other processes have synced."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2844,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "EdColeman",
+          "comment": "The current tests cover what would have gone in those stubs - as well as what is now covered by ITs"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2861,
+    "rejection_reason": {
+      "value": "ALREADY_ADDRESSED",
+      "evidence": [
+        {
+          "comment_id": 943908306,
+          "author": "ctubbsii",
+          "comment": "Nevermind. Next test covers this case already."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3199,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1114377959,
+          "author": "jmark99",
+          "comment": "In this particular test class, testing of the message text is used for each of the error checks.The two new tests follow the existing format for the class. I was working with the new compaction service and had an error in my config. I ran it through the check, but the message gave no real information as to what was wrong. It wasn't until I manually found it that I was able to correct it. The additional messaging will hopefully make error discovery easier in the future."
+        },
+        {
+          "comment_id": 1114377959,
+          "author": "jmark99",
+          "comment": "No problem. I understood. I was just trying to point out that if you look at that test class in particular, all of the other error condition checks also check the message text. So I decided to follow the same format for the two additional tests. \r\nAlso, since the purpose of the additions was to specifically add output new information to the user, I'm wasn't sure of a better way to verify the new messages appeared in the error output. "
+        },
+        {
+          "comment_id": 1114377959,
+          "author": "EdColeman",
+          "comment": "Sorry - didn't realize that the test was doing that already - all good."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3431,
+    "rejection_reason": {
+      "value": "TOO_COMPLEX",
+      "evidence": [
+        {
+          "comment_id": 1206978775,
+          "author": "keith-turner",
+          "comment": "> Also, is this case (split out of bounds) covered by a test?\r\n\r\nThis one is really tricky to test because would only see it in practice if the client code has bug.  If the client code is working properly it will only send rows that are within the extent.  So can not test this via API calls, would need to directly send bad data to the thrift API which is not something I am sure I want to do an IT because it would be a lot of code."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3779,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1337680830,
+          "author": "ctubbsii",
+          "comment": "Instead of doing this, you should use `@Disabled`\r\n\r\n```suggestion\r\n    final int oldestSupported = AccumuloDataVersion.ROOT_TABLET_META_CHANGES;\r\n```\r\n\r\nOn the method, add:\r\n\r\n\r\n```java\r\n@Disabled(\"must fix https://github.com/apache/accumulo/issues/3768 to re-enable\")\r\n```"
+        },
+        {
+          "comment_id": 1337680830,
+          "author": "EdColeman",
+          "comment": "I thought of using disabled - opted to make this test fail instead.  This way, as the code is changed to support the necessary version, this test will fail and be impossible to overlook.  "
+        },
+        {
+          "comment_id": 1337680830,
+          "author": "EdColeman",
+          "comment": "Yes - when adding the supporting versions to `UpgradeCoordinator` the line \r\n```\r\n IntStream.of(oldestSupported - 1, currentVersion + 1).forEach(shouldFail);\r\n```\r\ncauses a hard fail.  (My line numbers may be off by one.)\r\n\r\n```\r\norg.opentest4j.AssertionFailedError: Expected java.lang.IllegalStateException to be thrown, but nothing was thrown.\r\n\r\n\tat org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)\r\n\tat org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)\r\n\tat org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)\r\n\tat org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3083)\r\n\tat org.apache.accumulo.server.ServerContextTest.lambda$testCanRun$3(ServerContextTest.java:144)\r\n\tat java.base/java.util.Spliterators$IntArraySpliterator.forEachRemaining(Spliterators.java:1032)\r\n\tat java.base/java.util.stream.IntPipeline$Head.forEach(IntPipeline.java:593)\r\n\tat org.apache.accumulo.server.ServerContextTest.testCanRun(ServerContextTest.java:147)\r\n```\r\n\r\n"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 1483,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 512126947,
+          "author": "kaisun2000",
+          "comment": "Nit: LOG.info may be better. Otherwise, it is hard for people using it to see the leaked thread if they wish as they need to turn on debug. which can result in a lot more other lines."
+        },
+        {
+          "comment_id": 512126947,
+          "author": "jiajunwang",
+          "comment": "This is the main source of verbose output. Before we enforce it, I think it is not a good idea to output it. Note that for now, EVERY single test class prints these 100 lines."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 1750,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 638370901,
+          "author": "jiajunwang",
+          "comment": "This is the pain point that we want to address with this change. I suggest change the test to validate the reverse way. So you don't have to disable the test, and the new change will be protected by more coverage."
+        },
+        {
+          "comment_id": 638370901,
+          "author": "junkaixue",
+          "comment": "In this PR, I would like to stablize the existing tests. I will have a new test class in a different PR already covered those recovery cases.\r\n\r\nDisable the test is keep the possibility of supporting the feature again. As I said, this feature is not determined to implement or not. "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 1958,
+    "rejection_reason": {
+      "value": "ALREADY_ADDRESSED",
+      "evidence": [
+        {
+          "comment_id": 807428945,
+          "author": "zhangmeng916",
+          "comment": "Shall we test for both cases? Virtual zone larger than current zone, and virtual zone smaller than current zone?"
+        },
+        {
+          "comment_id": 807428945,
+          "author": "qqu0127",
+          "comment": "The test cases are ordered in a way to test 7 -> 9 -> 7, we are covering it already with the 9 -> 7 jump."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2153,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 899370577,
+          "author": "desaikomal",
+          "comment": "do we need any additional methods to ever update Acl or ACL policy? also how about ACL validations?"
+        },
+        {
+          "comment_id": 899370577,
+          "author": "NealSun96",
+          "comment": "Those functionalities can be supported by other interfaces. For this PR, I'm adding the minimal required functionality which is to register an ACL entry. "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2532,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1237430716,
+          "author": "rahulrane50",
+          "comment": "Shouldn't we assert in else block as well? Or we are expecting any other status code is fine?"
+        },
+        {
+          "comment_id": 1237430716,
+          "author": "desaikomal",
+          "comment": "Thanks for review. Test is ECHOing the request to outside server. If you can't reach the outside server, test used to fail. That is why we validate only if we can successfully reach the end-point. Else part, we can't validate. "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2597,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1301965176,
+          "author": "GrantPSpencer",
+          "comment": "Nit: we could use TestHelper to get method name for print statements"
+        },
+        {
+          "comment_id": 1301965176,
+          "author": "xyuanlu",
+          "comment": "Thanks for the suggestion. I think normally we just use the plan text test func name to reduce string append. "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2710,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1419685548,
+          "author": "junkaixue",
+          "comment": "If we don't have the usage of this, maybe let's remove it."
+        },
+        {
+          "comment_id": 1419685548,
+          "author": "zpinto",
+          "comment": "We have usage of this in RoutingTableProvider."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "httpcomponents-client",
+    "pr_number": 327,
+    "rejection_reason": {
+      "value": "TOO_COMPLEX",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "ok2c",
+          "comment": "> Noticed you're using `@EnableRuleMigrationSupport` to retain `@RunWith(Parameterized.class)`. Are you aware of [this automated JUnit Jupiter migration for Parameterized]\r\n\r\n@timtebeek I did attempt to port our parameterized tests to JUnit 5 approximately 6 months back and failed. There was simply no way (I could find or think of) to parameterize resource rules with JUnit 5.\r\n\r\nAny chance you could upgrade just one test case to demonstrate how it can be done?\r\n\r"
+        },
+        {
+          "comment_id": 0,
+          "author": "timtebeek",
+          "comment": "Oh wow yes it's quite a bit more involved; looked into it just now, but the whole hierarchy down from `org.apache.hc.client5.testing.async.AbstractServerTestBase` is a challenge given that scheme is now passed as a constructor argument. No quick fixes there I'm afraid. :disappointed: "
+        },
+        {
+          "comment_id": 0,
+          "author": "arturobernalg",
+          "comment": "> Oh wow yes it's quite a bit more involved; looked into it just now, but the whole hierarchy down from `org.apache.hc.client5.testing.async.AbstractServerTestBase` is a challenge given that scheme is now passed as a constructor argument. No quick fixes there I'm afraid. 😞\r\n\r\nHi @timtebeek I tried different things and  was impossible.\r\nTY\n"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "httpcomponents-client",
+    "pr_number": 496,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1369243344,
+          "author": "ok2c",
+          "comment": "> We're calling `isExplicitlyCacheable` twice within the `isResponseCacheable` method. Maybe we could storing its result in a variable and reusing it.\r\n\r\n@arturobernalg True. However, It is relatively cheap and the first invocation gets executed conditionally. I think It is not worth the ugliness of having an extra parameter to pass around."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "maven-surefire",
+    "pr_number": 527,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 857172458,
+          "author": "pzygielo",
+          "comment": "With this access change I expected to see plenty of new UTs - but there is none committed here."
+        },
+        {
+          "comment_id": 857172458,
+          "author": "mthmulders",
+          "comment": "Ah, well, I thought about doing that, but eventually refrained from it. I'll revert the visibility change."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "struts",
+    "pr_number": 573,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "JCgH4164838Gh792C124B5",
+          "comment": "Hi @yasserzamani.\r\n\r\nThanks for the review, and more background on the DI and alias behaviour.  😄 \r\n\r\n> At bottom this LGTM and will merge. Just one thing. A few tests which are from past and not related, are deleted, I think by mistake, right? If so, then could you revert them. thanks!\r\n\r\nThe `testXXXAlternateConstructor()` tests were intentionally removed with the recent set of changes, as they no longer made sense to me once the changes you made to the parameterized `OgnlUtil` constructor were applied to this PR.  Those deleted tests were originally code coverage \"duplicate\" tests of existing tests to cover `OgnlUtil(null, null)` calls, but now using null parameters is invalid and will result in `IllegalArgumentException` , so those tests no longer seemed to make sense.  The general test for `OgnlUtil` with null parameters should now be covered by `testDefaultOgnlUtilAlternateConstructorArguments()` , and there are still the `testXXXAlternateConstructorPopulated()` tests covering non-null parameters.\r\n\r\nPlease let me know if the above makes sense, and if you agree the test changes are valid ?\r\n\r\nIf not, I can restore the deleted tests and make changes to pattern them like `testDefaultOgnlUtilAlternateConstructorArguments()`.   Please let me know what you think.\r\n"
+        },
+        {
+          "comment_id": 0,
+          "author": "yasserzamani",
+          "comment": "@JCgH4164838Gh792C124B5 thanks for clarification! LGTM :+1: "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "struts",
+    "pr_number": 664,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1127555533,
+          "author": "kusalk",
+          "comment": "> We have two SecurityMemberAccessTest in two different packages to test two different behaviours. One test is in the package com.opensymphony.xwork2.ognl which is excluded.\r\n\r\n@lukaszlenart Do you think this is an okay solution?"
+        },
+        {
+          "comment_id": 1127555533,
+          "author": "lukaszlenart",
+          "comment": "Nope :) Yet testing the `MemberAccess` behaviour for different settings makes sense, this is the last line of defence :)"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1553,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 389771101,
+          "author": "ctubbsii",
+          "comment": "I don't like that annotation, because:\r\n\r\n1. it can create an unnecessary Guava dependency,\r\n2. I don't like checking to see if we already have Guava on that module, and\r\n3. the annotation provides no additional value over a comment since there are no tools for which the annotation would matter\r\n\r\nThe method name makes it clear. The comment is bonus. An annotation wouldn't do anything other than add an import and possibly a new direct dependency if Guava wasn't already in the pom."
+        },
+        {
+          "comment_id": 389818030,
+          "author": "ctubbsii",
+          "comment": "I wanted to explicitly use the String version (hence the variable type) to protect against future bugs, because Path has a constructor that takes a URI also, and it behaves differently. Using this instead of the method reference ensures we use the overloaded constructor that takes a String rather than the one that takes a URI."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1616,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "ivakegg",
+          "comment": "Shouldn't this include a revert of the previous revert?"
+        },
+        {
+          "comment_id": 0,
+          "author": "milleruntime",
+          "comment": "> Shouldn't this include a revert of the previous revert?\r\n\r\nI don't think so.  He pulled out this one line from the previous change (which included too many other changes that broke the build)."
+        },
+        {
+          "comment_id": 0,
+          "author": "Manno15",
+          "comment": "I am currently working on getting those other changes to build but this one should be good to go."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2191,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "ctubbsii",
+          "comment": "The change looks fine. My only concern about this change is that it doesn't fully fix the issue. As far as I can tell, the configuration that is being passed in is always the system config, and never the per-table configuration, in spite of per-table properties being read from it later on."
+        },
+        {
+          "comment_id": 0,
+          "author": "milleruntime",
+          "comment": "> The change looks fine. My only concern about this change is that it doesn't fully fix the issue. As far as I can tell, the configuration that is being passed in is always the system config, and never the per-table configuration, in spite of per-table properties being read from it later on.\r\n\r\nCorrect. It is only an improvement of what is there. This doesn't fix https://github.com/apache/accumulo/issues/2187"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2241,
+    "rejection_reason": {
+      "value": "TOO_COMPLEX",
+      "evidence": [
+        {
+          "comment_id": 1,
+          "author": "milleruntime",
+          "comment": "> Would it be better if it was something more like srvContext ? It looks like we have other contexts (ClientContext, ClassLoaderContext) as well as M/R contexts. It may be that ServerContext and ClientContext are not used together - but with using 'context' anyone should not assume that all instances of context are server contexts.\r\n> \r\n> 'context' does read better, but wondering if there are benefits to being more specific to add clarity or if it just makes it harder to read for something that is already obvious.\r\n\r\nThe other context objects are only used in specific classes. I went with the name that was most popular but I am not opposed to the more specific name `serverContext`. It would just require more changes."
+        },
+        {
+          "comment_id": 2,
+          "author": "milleruntime",
+          "comment": "Just comparing what is already in the code... To change the name to `serverContext` would require changing 147 files vs `context`  in this PR only changes 23. The name `context` is used in MR classes for `JobContext`, for a private Context object in ContextManager, both of which are deprecated. But it is used for ClientContext in about 100 files and for a String type in `ContextClassLoaderFactory`, which is new. \r\n\r\nThe way that the String type is used in `ContextClassLoaderFactory`, makes me think that it is the only object that should use the `context` variable name. As opposed to everywhere else we have specific types of context objects (ClientContext, ServerContext, JobContext, etc) that we can be more specific with the variable names."
+        },
+        {
+          "comment_id": 3,
+          "author": "milleruntime",
+          "comment": "I started renaming `context` to `serverContext` but it is a lot more work. It would be nice to have both consistency and specificity, but I am going to go with this PR so we at least have consistency."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2332,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 737818879,
+          "author": "ctubbsii",
+          "comment": "I think these are deprecated. You may need to avoid imports of these to avoid unnecessary warnings about deprecated classes being referenced."
+        },
+        {
+          "comment_id": 737818879,
+          "author": "milleruntime",
+          "comment": "I didn't see any warnings in the build output. Perhaps since the class is deprecated, it doesn't care about the imports."
+        },
+        {
+          "comment_id": 737818879,
+          "author": "ctubbsii",
+          "comment": "I didn't realize CleanUp was deprecated. That makes sense!"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2339,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 741294504,
+          "author": "ctubbsii",
+          "comment": "I thought about this, but decided against exposing it. There's no reason a subclass needs to rely on this specific instance of the Random. And, exposing the field to sub-classes really restricts our ability to evolve implementation (fields are harder to evolve than methods). If it becomes necessary/useful to expose this, it can be done in a getter method that can be overridden. But, it doesn't seem to be necessary at this time."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2377,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 766632823,
+          "author": "dlmarion",
+          "comment": "Why remove this, but not the others?"
+        },
+        {
+          "comment_id": 766632823,
+          "author": "ctubbsii",
+          "comment": "I think specifically, this removed the redundant assignment to null on line 87. If you're referring to lines 81 and 82, those assignments can't be removed, because those variables need to be initialized in subsequent lines. Line 80 did not need to be initialized because it is redundantly initialized on line 87."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2454,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "ctubbsii",
+          "comment": "> Is there a reason why the default for port search can't be set to true? I am always setting it to true during testing and since its a new, we aren't breaking any current clusters.\n> \n> This fixes #2375\n\nIn general, we want it true for testing, but I think for production deployments, it's usually better to have fixed ports. It's better for firewall management / network administration. Not having it on by default is consistent with our other server types also having it off by default.\n\nI'm not so sure #2375 is entirely fixed by this. I keep seeing other issues with those, even after this)."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2727,
+    "rejection_reason": {
+      "value": "TOO_COMPLEX",
+      "evidence": [
+        {
+          "comment_id": 880641098,
+          "author": "ctubbsii",
+          "comment": "It's used in a getter I added, to ensure that it overrides super.getConfiguration() if it is passed in explicitly.\r\nI would like to remove it entirely, so it's not passed into the constructor at all, instead relying on overriding it in getter in a test subclass, but it is needed in the constructor, so it needs to be passed in. The places we use it in the constructor could call `this.getConfiguration()`, but they'd have to be lazily-loaded with a Supplier, like we've done in ServerContext and elsewhere, so that the these objects that read the configuration are instantiated after the server itself is fully constructed. Then, we can get rid of the second constructor. But, that seemed like a lot of effort for now."
+        },
+        {
+          "comment_id": 880644409,
+          "author": "ctubbsii",
+          "comment": "For completeness, same reply :smiley_cat: "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2740,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 4,
+          "author": "ctubbsii",
+          "comment": "> I'm not sure that PropStoreKey provides any benefit over PropCacheKey - I bounced around different variations, but maybe something that indicated that they are used for configurations (group of properties) - so something like ConfigKey or ConfigStoreKey,...\r\n\r\nTo me, Prop and Config are basically synonymous in this context... both shorthand for \"Configuration Properties\". So, \"ConfigKey\" or \"ConfigStoreKey\" are basically the same in my head as \"PropStoreKey\", and \"PropStoreKey\" is consistent with the name of the \"PropStore\" (rather than \"ConfigStore\").\r\n\r\n> \r\n> Can the renaming be done outside of any other changes? The renaming is easy to check, and I think the other changes are being hidden by the rename changes.\r\n\r\nI suppose, but I'm probably not going to update this PR to do so until at least Tuesday.\r\n\r\n> \r\n> I lean towards providing methods to perform cache operations rather than returning the cache. If the cache is exposed, then it is much harder to reason what things are occurring through the prop store and what may be just manipulating the cache directly.\r\n\r\nThe prop store already has to be written with no knowledge of what's going on inside the cache, since the cache itself can remove local copies at will. So, having something else have the ability to remove items from the cache is not a big deal. If you want to put cache-manipulation APIs on the propstore itself, then we probably don't need two interfaces and can merge PropStore and PropCache into a single CachingPropertyStore.\r\n"
+        },
+        {
+          "comment_id": 7,
+          "author": "ctubbsii",
+          "comment": "> My issue is that if you return the cache, then callers can call any method - if a clear method is provided at the store level, then that bounds what the caller can do and would simplify changes at the cache layer.\r\n\r\nJust to be clear, we're talking about PropCache's API, not the internal Caffeine Cache object. So, we're already bounding the caller to what PropCache supports.\r\n\r\nI don't think it makes sense to turn PropStore API into a proxy for PropCache, with a subset of its APIs. Separation of responsibilities: the PropCache API is responsible for providing cache operations, the PropStore API is responsible for providing store operations. Neither are public API. There is no risk of exposing things to end users, because none of that matters here. It's just a question of how we're organizing internal code. I don't think it simplifies things to put cache operations on the PropStore API, rather than call them from the PropCache API. If we do that, there's no point in having separate interfaces to separate the responsibilities. I think doing that adds extra layers one has to trace code through when debugging internals, and makes things far more complex. If the operation is already available on PropCache, just make the PropCache visible. It can't get more simpler than that.\r\n"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2834,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "dlmarion",
+          "comment": "I agree with your observations here. I'll admit that I don't fully understand the layers of configuration objects here. I do think there is an opportunity to consolidate some of this logic, but that's a different PR possibly for another time."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 2874,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 943757785,
+          "author": "DomGarguilo",
+          "comment": "Could a more descriptive method name be used here? Maybe something along the lines of `emptyConfig` or `getEmptyCloneConfig`? Regardless, these changes LGTM"
+        },
+        {
+          "comment_id": 943757785,
+          "author": "milleruntime",
+          "comment": "I wanted to keep it as short as possible since it's likely to be used as a param to the clone method.\r\n<pre>\r\nclient.tableOperations().clone(table1, table2, CloneConfiguration.empty()));\r\n</pre>\r\nI also thought `none()` or `default()` might work. Or we could even just have a static `build()` but I thought that might be confusing with the `builder()` method.\r\n"
+        },
+        {
+          "comment_id": 943757785,
+          "author": "DomGarguilo",
+          "comment": "Understood. Makes sense to me :+1: "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3361,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1180471555,
+          "author": "ctubbsii",
+          "comment": "Closing a closable resource is the normal case. There's nothing to comment on. Being unable to close it would be unusual... but in the cases where we can't close it... it's because it's still being used. Also not unusual.\r\n\r\nI'm not sure why somebody would think that this *wasn't* safe."
+        },
+        {
+          "comment_id": 1180471555,
+          "author": "ctubbsii",
+          "comment": "The entire contents of the file could fit on a small Post-It note (if you omit the import statements and license header). I don't think it will take anybody any substantial amount of time to realize that context is not being used anywhere else. And there's no special or unique situation to call out. So, I'd struggle to even know what I could say that would be helpful in a comment."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3402,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 1195554297,
+          "author": "ctubbsii",
+          "comment": "I took another look, and I think it's fine the way it is. It seems like a slight trade-off, mostly style preferences. I didn't write this code originally, and don't have a stake in one style or the other... but I'm inclined to keep the more minimal change in this PR."
+        },
+        {
+          "comment_id": 1195557682,
+          "author": "ctubbsii",
+          "comment": "Originally committed this, but reverted because this (or another one) broke the formatter, and my change is more minimal. This might be an improvement, but not one I'm inclined to bother with here. Maybe it'd be worth putting the message in a String variable and reusing it, but that's out of scope of my change, which is just using the more specific type."
+        },
+        {
+          "comment_id": 1195559613,
+          "author": "ctubbsii",
+          "comment": "Originally committed this, but reverted because this (or another one) broke the formatter, and my change is more minimal. This might be an improvement, but not one I'm inclined to bother with here. Maybe it'd be worth putting the message in a String variable and reusing it, but that's out of scope of my change, which is just using the more specific type."
+        },
+        {
+          "comment_id": 1195561271,
+          "author": "ctubbsii",
+          "comment": "Originally committed this, but reverted because this (or another one) broke the formatter, and my change is more minimal. This might be an improvement, but not one I'm inclined to bother with here. Maybe it'd be worth putting the message in a String variable and reusing it, but that's out of scope of my change, which is just using the more specific type."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3863,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1364414366,
+          "author": "keith-turner",
+          "comment": "The refresh metadata is inside the if, so the behavior is the same.  That closing brace goes with the try.  Its not easy to see here, I thought it was always calling refresh until I went to an ide to fix it."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3988,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1406928185,
+          "author": "keith-turner",
+          "comment": ">  if someone skipped an upgrade version the distinct versions could help stopping the upgrade \r\n\r\nWe have higher level code that has the purpose of preventing that at an accumulo instance level.   \r\n\r\nThinking the version here in RootTabletMetadata may be more concerned with the encoding of its data and the structure of its json, none of which changed.   The fields names in the json and the structure of the json has not changed.\r\n"
+        },
+        {
+          "comment_id": 1406928185,
+          "author": "keith-turner",
+          "comment": "> The inclusion of range for fencing is a change.\r\n\r\nYeah its a change in the data stored in the json.  In general the RootTabletMetadata object stores accumulo Key/Values in  json, but it does not do a lot to validate those key values are correct tablet metadata.  It relies on other shared code that validates all tablet metadata like the metadata constraint and tablet metadata parsing code that executes when reading any tablet metadata stored in different locations.   All of this other code can check for anomalies in the root tablet metadata, thinking its better to rely on that and not one off validations for just the root tablet metadata."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 3994,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1408457397,
+          "author": "EdColeman",
+          "comment": "The code in `ServiceLock.validateAndSort` parses and tests portions, but if the validation passes, it saves / returns the original strings.  Testing either way then is not really a strong test.  I was using this test to figure out where things were going wrong with the validation. I kept it because it was easier to use this to debug.  The test above does test that the candidate string is returned correctly.  If this test is not adding much value it can be deleted."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 4014,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "keith-turner",
+          "comment": "> It looks like https://github.com/apache/accumulo/pull/3425 may have changed the exception being thrown from AccumuloServerException to AccumuloException. Not sure if that's a big deal or not...\r\n\r\nI suspect thats caused by split moving from a direct tserver RPC to using the RPCs that run fate operations.  I don't think that change is an issue."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 4085,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1433118416,
+          "author": "keith-turner",
+          "comment": "Can you verify the contents of `parts[0]` here?  Not sure if that is possible when considering possible old code."
+        },
+        {
+          "comment_id": 1433118416,
+          "author": "ctubbsii",
+          "comment": "As far as I can tell, the `parts[0]` could contain `-` (current code) or `tserver:port` (previous version). I can't be sure about prior to that, but I believe there was an upgrade step that removed relative paths from WAL entries that would have rewritten anything that would be older than these two most recent versions.\r\n\r\nMy concern about adding strict validation on the ignored part is that we could cause an unnecessary recovery failure. Accommodating variance in the part that doesn't matter by not validating its content avoids that.\r\n\r\nI just have a lot of uncertainty about the history of the various formats of these columns. I would prefer not to strictly validate the ignored part, and we just make sure we go through upgrade code for any future metadata schema changes."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "commons-io",
+    "pr_number": 267,
+    "rejection_reason": {
+      "value": "UNKNOWN",
+      "evidence": []
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 1697,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 613507971,
+          "author": "junkaixue",
+          "comment": "NIT: why not just put sychronized keyword on the method?"
+        },
+        {
+          "comment_id": 613507971,
+          "author": "jiajunwang",
+          "comment": "That would be too heavy. And I'm almost 100% sure it will impact performance since the cache is used everywhere in the pipeline."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 1842,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "NealSun96",
+          "comment": "@jiajunwang On line 178 we have `Assert.assertTrue(verifier.verifyByPolling());` That checks for cluster convergence like you said. \r\n\r\nThe previous test causes the verifier to mistakenly verify an intermediate state instead of the final state; adding the maintenance mode should mitigate that, and let the verifier do its job. "
+        },
+        {
+          "comment_id": 0,
+          "author": "jiajunwang",
+          "comment": "> @jiajunwang On line 178 we have `Assert.assertTrue(verifier.verifyByPolling());` That checks for cluster convergence like you said.\r\n> \r\n> The previous test causes the verifier to mistakenly verify an intermediate state instead of the final state; adding the maintenance mode should mitigate that, and let the verifier do its job.\r\n\r\nI had the impression that this verifier is not enough if not validating disabled nodes during the wait. But I guess you are right that what we've done here is the best possible way for NOW. Eventually, we need to fix https://github.com/apache/helix/issues/526.\r\nLet's keep the PR unchanged, it shall minimize the failure."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 1943,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 794177980,
+          "author": "rabashizade",
+          "comment": "With this metric, are we interested in the number of actual compressed ZNodes, or the number of write operations with compressed data? If the latter is the case, then this works, but if we want the total number of ZNodes, I think we should decrease this metric at some point, and on top of that check if the data in existing ZNodes is already compressed, so we don't double-count. I understand this could be costly though. But I think the naming suggests the metric is returning the number of ZNodes and not the number of compressed writes."
+        },
+        {
+          "comment_id": 794177980,
+          "author": "jiajunwang",
+          "comment": "Actual compressed ZNodes count is the ideal metric that we want, but I personally don't think it's doable in ZkClient level metrics. For example, do we report the compressed node written by the other ZkClients? If not, then what's the purpose of reporting an \"inaccurate\" compressed ZNode count?\r\n\r\nThe current plan is to report if any Znode is compressed through the ZkClient, counter is kind of showing the volume in addition to a boolean (0 or 1), so I pick up a counter metric. As for understanding the total compressed node, we need to leverage some scanning tools (too costly to be included in any online Helix instances). But this would be out of the scope of this PR.\r\n\r\nAfter all, the metric is about how many new compressed znode is written. If one compressed znode is updated 10 times, then this metric reports 10. That's why it is called \"CompressedZnodeWriteCounter\" instead of \"CompressedZnodeCounter\"."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2376,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1106203203,
+          "author": "qqu0127",
+          "comment": "IMHO, permanent listener is the most common and default option for most cases, also the behavior is commented. I'd keep it this way unless you have strong opinion. Thanks."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2480,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1189133545,
+          "author": "rahulrane50",
+          "comment": "If i understand correctly then this is just merges ideal state and resource config and return weights for paritions right? If yes then do you think moving it to util method would help rather than having a separate class? "
+        },
+        {
+          "comment_id": 1189133545,
+          "author": "qqu0127",
+          "comment": "Yeah, that's true, a util also works. I made it this way hoping this is more object-oriented, and to implement an interface https://github.com/apache/helix/pull/2463/files#diff-ae7e0f8fcf2cb9f7d514f6de739a3b9bb9e5a05cc5eb5e86c22fdbd8f221cf2e, and this is just one data provider for WAGED."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2526,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1222195669,
+          "author": "xyuanlu",
+          "comment": "can we use verifier? "
+        },
+        {
+          "comment_id": 1222195669,
+          "author": "desaikomal",
+          "comment": "As we talked offline, this is not a boolean returning method and so can't use verifier."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2585,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1294080199,
+          "author": "junkaixue",
+          "comment": "Would this change ZNode stats? like ephemeral owner?\r\n\r\nAlso, just be safe, shall we use updater incase we have any requirement to update data in this node. At least, it will not cause race condition."
+        },
+        {
+          "comment_id": 1294080199,
+          "author": "xyuanlu",
+          "comment": "Here when we touch current ZNode, \r\n1. Get ZNode version and content in the same API call. \r\n2. Check content - if current participant is leader\r\n3. If 2 is yes, update ZNode using set() with expected version. Meaning we only touch ZNode if no new change was made between step 1 and 3. \r\n\r\nSince current participant is still leader, meaning client reconnect within expire time. Touching the ZNode wont change  ephemeral owner."
+        },
+        {
+          "comment_id": 1294080199,
+          "author": "xyuanlu",
+          "comment": "Had an offline discussion. This will not cause data overwrite or other eace condition as we are using `set()` with expected version. "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2586,
+    "rejection_reason": {
+      "value": "NOT_NECESSARY",
+      "evidence": [
+        {
+          "comment_id": 1290525815,
+          "author": "himanshukandwal",
+          "comment": "As this is a new field, so will there be a case where client might pass json with out this property?\r\n\r\nShould we use [JsonIgnoreProperties.html#ignoreUnknown](http://fasterxml.github.io/jackson-annotations/javadoc/2.9/com/fasterxml/jackson/annotation/JsonIgnoreProperties.html#ignoreUnknown() )"
+        },
+        {
+          "comment_id": 1290525815,
+          "author": "zpinto",
+          "comment": "Yes, this case is covered in the unit tests that already existed. JsonProperty does not require that this field be there in InstanceChangeMap."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "helix",
+    "pr_number": 2641,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1347721051,
+          "author": "desaikomal",
+          "comment": "wondering if want to have one generic -skipAllHealthCheck ?"
+        },
+        {
+          "comment_id": 1347721051,
+          "author": "zpinto",
+          "comment": "I don't think it makes since to support skipAllHealthChecks otherwise there would be no point to call the stoppable API."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "httpcomponents-client",
+    "pr_number": 222,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 409742770,
+          "author": "ok2c",
+          "comment": "@heejeongkim Why do you want to quietly ignore malformed `max-age` and `expires` attributes with strict RFC 6265 policy? That does not look right to me.   "
+        },
+        {
+          "comment_id": 409742770,
+          "author": "ok2c",
+          "comment": "@heejeongkim I am quite sure the statement in the section 4.1.2 refers to custom attributes, say `custom-stuff`, not malformed standard ones. I think it would be wrong to silently ignore standard attribute values that are obviously malformed.\r\n\r\nLet's fix the NPE in this PR and decide what should be done about `LaxExpiresHandler` in a new one. I prefer to not change the behavior of `BasicExpiresHandler` and `BasicMaxAgeHandler` at all."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "httpcomponents-client",
+    "pr_number": 362,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 1121996550,
+          "author": "ok2c",
+          "comment": "@niranjanghule I am not a big fan of such one-line commits. Is this the only instance of an unused variable in the source code? "
+        },
+        {
+          "comment_id": 1122010060,
+          "author": "niranjanghule",
+          "comment": "Hi Oleg,\n\nI have not analyzed entire codebase.\nI was studying few testcases and raised pr only for those.\n\nThanks and Regards\nNiranjan Ghule\nMOB: 9867061576\n\n\nOn Tue, 10 May 2022, 12:20 pm Oleg Kalnichevski, ***@***.***>\nwrote:\n\n> @niranjanghule <https://github.com/niranjanghule> I am not a big fan of\n> such one-line commits. Is this the only instance of an unused variable in\n> the source code?\n>\n> —\n> Reply to this email directly, view it on GitHub\n> <https://github.com/apache/httpcomponents-client/pull/362#issuecomment-1121996550>,\n> or unsubscribe\n> <https://github.com/notifications/unsubscribe-auth/ACP5YFBLO4LIG7WJBQNVYBDVJIBM5ANCNFSM5VLLQHYA>\n> .\n> You are receiving this because you were mentioned.Message ID:\n> ***@***.***>\n>\n"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "httpcomponents-client",
+    "pr_number": 484,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1330608339,
+          "author": "arturobernalg",
+          "comment": "@ok2c  Should the return value of the deprecated is303CachingEnabled() method be set to false to align with all the changes?"
+        },
+        {
+          "comment_id": 1330608339,
+          "author": "ok2c",
+          "comment": "@arturobernalg The cache protocol layer will now be treating 303 responses as potentially cacheable by default. This is why I thought the deprecated method should also return `true`. Does that make sense?"
+        },
+        {
+          "comment_id": 1330608339,
+          "author": "arturobernalg",
+          "comment": "@ok2c  that its correct. my bad. "
+        }
+      ]
+    }
+  },
+  {
+    "repo": "httpcomponents-client",
+    "pr_number": 552,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 6,
+          "author": "ok2c",
+          "comment": "> only looks at the attributes, not at the getter methods:\r\n\r\n@sratz `context.setCookieStore(cookieStore);` will work correctly regardless of the version. What changed in 5.4 is that standard attributes no longer get shoved into a map."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "maven-surefire",
+    "pr_number": 444,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 1,
+          "author": "slawekjaranowski",
+          "comment": "When one PR contains many updates we don't sure which one is cause to build failure ..."
+        },
+        {
+          "comment_id": 2,
+          "author": "Tibor17",
+          "comment": "@slawekjaranowski\r\nI am sure because I can see the logs, code and we developers are great in analysis and investigation. Yes, many devs just say, there is a bug but they do not see any log, any files, any analysis, nothing. And it happens many times and in many companies and that's really pity. Of course I am testing every commit on my side.\r\nThis issue was very simple to understand, the `maven-shared-utils` has CLI API which is platform specific and escapes the CLI arguments, especially on *Nix systems, more specifically classes `BourneShell` and `CmdShell` and that's the reason why my local tests passed on Windows."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "opennlp",
+    "pr_number": 486,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 1065397446,
+          "author": "rzo1",
+          "comment": "No `BufferedOutputStream` for `FileOutputStream` ?"
+        },
+        {
+          "comment_id": 1065397446,
+          "author": "mawiesne",
+          "comment": "This PR/issues targets _read_ IO operations, only. _Write_ is a separate topic."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "struts",
+    "pr_number": 299,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "aleksandr-m",
+          "comment": "@lukaszlenart Do we need to push generated tags html to repo? Is it used for something? Maybe we should exclude it from repo."
+        },
+        {
+          "comment_id": 0,
+          "author": "lukaszlenart",
+          "comment": "I think we use them in our docs"
+        }
+      ]
+    }
+  },
+  {
+    "repo": "struts",
+    "pr_number": 552,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 874805101,
+          "author": "sepe81",
+          "comment": "Maybe we could add some additional infos to the commit to clarify the context\r\n\r\nRemove unused spring-webmvc-portlet\r\nSpring 5.x dropped support for spring-webmvc-portlet\r\nhttps://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-5.x#dropped-support"
+        },
+        {
+          "comment_id": 874805101,
+          "author": "lukaszlenart",
+          "comment": "I know, but the Struts Portlet Plugin depends on it for now - the whole Portel thing is already marked as deprecated and will be gone with the next major release."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "struts",
+    "pr_number": 763,
+    "rejection_reason": {
+      "value": "AUTHOR_DISAGREES",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "kusalk",
+          "comment": "I think many applications make use of the VarRef functionality (including any application that uses Action or Set Struts components) so no it wouldn't make sense to block by default.\r\n\r\nBut by removing this dependency in UIBean, for applications that don't use this functionality, they can choose to block it completely.\r\n\r\nI've got a list of other nodes that we probably can block by default (which I'm still compiling) - I think we can introduce that in 7.0."
+        }
+      ]
+    }
+  },
+  {
+    "repo": "struts",
+    "pr_number": 822,
+    "rejection_reason": {
+      "value": "OUT_OF_SCOPE",
+      "evidence": [
+        {
+          "comment_id": 1439286738,
+          "author": "lukaszlenart",
+          "comment": "It shouldn't change as far I understand, yet I'm not sure if this is true :) Let's leave it as is, at some point I will solve this puzzle ;-)"
+        }
+      ]
+    }
+  }
+]

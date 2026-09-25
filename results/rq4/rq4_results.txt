@@ -1,0 +1,88 @@
+======================================================================
+RQ4
+======================================================================
+
+Research Question:
+What types of Technical Debt in test code are most frequently discussed and how are they addressed in Pull Requests?
+
+Test TD Mentioned
+--------------------------------------------------
+NO: 551 (63.04%)
+YES: 323 (36.96%)
+
+Mention Type
+--------------------------------------------------
+NOT_APPLICABLE: 551 (63.04%)
+EXPLICIT: 311 (35.58%)
+IMPLICIT: 12 (1.37%)
+
+Test TD Type
+--------------------------------------------------
+NOT_APPLICABLE: 551 (63.04%)
+FLAKY_TEST: 49 (5.61%)
+MISSING_TEST: 37 (4.23%)
+TEST_DESIGN: 36 (4.12%)
+HARD_TO_MAINTAIN_TEST: 34 (3.89%)
+LOW_COVERAGE: 31 (3.55%)
+WEAK_INSUFFICIENT_ASSERTION: 25 (2.86%)
+TEST_CLEANUP: 22 (2.52%)
+UNNECESSARY_REDUNDANT_TEST_CODE: 19 (2.17%)
+BROKEN_TEST: 17 (1.95%)
+TEST_STABILITY: 14 (1.60%)
+TEST_COMPATIBILITY: 9 (1.03%)
+ENVIRONMENT_DEPENDENCY: 8 (0.92%)
+TEST_DATA: 7 (0.80%)
+OTHER: 6 (0.69%)
+OUTDATED_TEST: 3 (0.34%)
+SLOW_TEST: 3 (0.34%)
+FRAGILE_TEST: 3 (0.34%)
+
+======================================================================
+Agreement by Test TD Type
+======================================================================
+
+agreement                        AGREED  IGNORED  POSTPONED  REJECTED  UNKNOWN
+test_td_type                                                                  
+BROKEN_TEST                       82.35    11.76       0.00      0.00     5.88
+ENVIRONMENT_DEPENDENCY            50.00    25.00      12.50     12.50     0.00
+FLAKY_TEST                        73.47     8.16       8.16      8.16     2.04
+FRAGILE_TEST                      66.67     0.00       0.00     33.33     0.00
+HARD_TO_MAINTAIN_TEST             70.59    14.71       5.88      5.88     2.94
+LOW_COVERAGE                      41.94    38.71       9.68      9.68     0.00
+MISSING_TEST                      64.86    10.81      13.51      8.11     2.70
+NOT_APPLICABLE                    51.72    25.77       5.08      6.17    11.25
+OTHER                             50.00    33.33       0.00     16.67     0.00
+OUTDATED_TEST                      0.00    33.33      66.67      0.00     0.00
+SLOW_TEST                         33.33    66.67       0.00      0.00     0.00
+TEST_CLEANUP                      72.73    13.64       0.00      9.09     4.55
+TEST_COMPATIBILITY                77.78    11.11       0.00     11.11     0.00
+TEST_DATA                         71.43    14.29      14.29      0.00     0.00
+TEST_DESIGN                       55.56    16.67      11.11      8.33     8.33
+TEST_STABILITY                    57.14    14.29       7.14      7.14    14.29
+UNNECESSARY_REDUNDANT_TEST_CODE   89.47     5.26       0.00      5.26     0.00
+WEAK_INSUFFICIENT_ASSERTION       64.00    20.00       4.00     12.00     0.00
+
+======================================================================
+Resolution by Test TD Type
+======================================================================
+
+resolution                       FIXED   NONE  P-FIXED  UNFIXED  UNKNOWN
+test_td_type                                                            
+BROKEN_TEST                      70.59  17.65     5.88     5.88     0.00
+ENVIRONMENT_DEPENDENCY           50.00   0.00     0.00    50.00     0.00
+FLAKY_TEST                       53.06  18.37     2.04    24.49     2.04
+FRAGILE_TEST                     33.33   0.00     0.00    33.33    33.33
+HARD_TO_MAINTAIN_TEST            52.94   0.00     5.88    26.47    14.71
+LOW_COVERAGE                     45.16   0.00     3.23    51.61     0.00
+MISSING_TEST                     59.46   0.00     2.70    32.43     5.41
+NOT_APPLICABLE                   23.41  48.46     3.09    21.23     3.81
+OTHER                            33.33  33.33     0.00    33.33     0.00
+OUTDATED_TEST                     0.00   0.00     0.00   100.00     0.00
+SLOW_TEST                        33.33   0.00     0.00    66.67     0.00
+TEST_CLEANUP                     50.00   0.00     0.00    22.73    27.27
+TEST_COMPATIBILITY               66.67  11.11     0.00    22.22     0.00
+TEST_DATA                        57.14   0.00     0.00    28.57    14.29
+TEST_DESIGN                      38.89   2.78     5.56    38.89    13.89
+TEST_STABILITY                   42.86  21.43     0.00    35.71     0.00
+UNNECESSARY_REDUNDANT_TEST_CODE  84.21   0.00     0.00    10.53     5.26
+WEAK_INSUFFICIENT_ASSERTION      48.00   0.00     8.00    36.00     8.00

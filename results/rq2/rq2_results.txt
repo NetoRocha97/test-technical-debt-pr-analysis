@@ -1,0 +1,29 @@
+============================================================
+RQ2
+============================================================
+
+Research Question:
+What are the key characteristics of suggestions for addressing Technical Debt issues?
+
+Suggestion Type
+----------------------------------------
+EXPLICIT: 540 (61.78%)
+NONE: 287 (32.84%)
+IMPLICIT: 47 (5.38%)
+
+Agreement
+----------------------------------------
+AGREED: 495 (56.64%)
+IGNORED: 195 (22.31%)
+UNKNOWN: 72 (8.24%)
+REJECTED: 60 (6.86%)
+POSTPONED: 52 (5.95%)
+
+Resolution
+----------------------------------------
+FIXED: 298 (34.10%)
+NONE: 286 (32.72%)
+UNFIXED: 218 (24.94%)
+UNKNOWN: 45 (5.15%)
+P-FIXED: 27 (3.09%)
+

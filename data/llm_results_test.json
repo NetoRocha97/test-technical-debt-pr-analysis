@@ -1,0 +1,605 @@
+[
+  {
+    "repo": "accumulo",
+    "pr_number": 1304,
+    "primary_pr_objective": {
+      "value": "BUG",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "PR metadata",
+          "comment": "Title: Fix #1281 Update TabletTime.maxMetatdataTime"
+        }
+      ]
+    },
+    "suggestion_type": {
+      "value": "EXPLICIT",
+      "evidence": [
+        {
+          "comment_id": 1,
+          "author": "keith-turner",
+          "comment": "Seems like object like these could be created in MetadataTimeTest and that would make the test shorter."
+        }
+      ]
+    },
+    "agreement": {
+      "value": "AGREED",
+      "evidence": [
+        {
+          "comment_id": 2,
+          "author": "hkeebler",
+          "comment": "agree, I was being lazy."
+        },
+        {
+          "comment_id": 3,
+          "author": "hkeebler",
+          "comment": "Last commit includes MetadataTimeTest cleanup. :)"
+        }
+      ]
+    },
+    "resolution": {
+      "value": "FIXED",
+      "evidence": [
+        {
+          "comment_id": 3,
+          "author": "hkeebler",
+          "comment": "Last commit includes MetadataTimeTest cleanup. :)"
+        }
+      ]
+    },
+    "test_td_mentioned": {
+      "value": "YES",
+      "evidence": [
+        {
+          "comment_id": 1,
+          "author": "keith-turner",
+          "comment": "Seems like object like these could be created in MetadataTimeTest and that would make the test shorter."
+        },
+        {
+          "comment_id": 4,
+          "author": "keith-turner",
+          "comment": "Doing lots of code reviews has motivated me to spend more time making my test more readable. My least favorite part of doing a code review is looking at the test, however I think a thorough review of the test pays future dividends so I do it. When I saw how you made one test more readable I thought that would be nice in the other test."
+        }
+      ]
+    },
+    "mention_type": {
+      "value": "EXPLICIT",
+      "evidence": [
+        {
+          "comment_id": 1,
+          "author": "keith-turner",
+          "comment": "Seems like object like these could be created in MetadataTimeTest and that would make the test shorter."
+        },
+        {
+          "comment_id": 4,
+          "author": "keith-turner",
+          "comment": "Doing lots of code reviews has motivated me to spend more time making my test more readable."
+        }
+      ]
+    },
+    "test_td_type": {
+      "value": "HARD_TO_MAINTAIN_TEST",
+      "evidence": [
+        {
+          "comment_id": 1,
+          "author": "keith-turner",
+          "comment": "Seems like object like these could be created in MetadataTimeTest and that would make the test shorter."
+        },
+        {
+          "comment_id": 4,
+          "author": "keith-turner",
+          "comment": "I have written many hard to read test in the past. Doing lots of code reviews has motivated me to spend more time making my test more readable."
+        }
+      ]
+    },
+    "sonarqube_rules_discussed": [
+      {
+        "rule": "java:S1854",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1481",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1854",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1481",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1854",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1481",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S100",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1313,
+    "primary_pr_objective": {
+      "value": "BUG",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "PR metadata",
+          "comment": "Title: fix #936 store root tablet file list in Zookeeper"
+        }
+      ]
+    },
+    "suggestion_type": {
+      "value": "EXPLICIT",
+      "evidence": [
+        {
+          "comment_id": 313614424,
+          "author": "ctubbsii",
+          "comment": "We should either store minimized (my preference; can use jq or pretty print on display), or store pretty-print without modifications."
+        },
+        {
+          "comment_id": 313617952,
+          "author": "ctubbsii",
+          "comment": "Could just hard-code something like `256_000`"
+        }
+      ]
+    },
+    "agreement": {
+      "value": "AGREED",
+      "evidence": [
+        {
+          "comment_id": 313614424,
+          "author": "keith-turner",
+          "comment": "That could be error prone, I will remove it."
+        },
+        {
+          "comment_id": 313617952,
+          "author": "keith-turner",
+          "comment": "I updated it to a constant."
+        }
+      ]
+    },
+    "resolution": {
+      "value": "FIXED",
+      "evidence": [
+        {
+          "comment_id": 313614424,
+          "author": "keith-turner",
+          "comment": "Removed it."
+        },
+        {
+          "comment_id": 313617952,
+          "author": "keith-turner",
+          "comment": "I updated it to a constant."
+        }
+      ]
+    },
+    "test_td_mentioned": {
+      "value": "NO",
+      "evidence": [
+        {
+          "comment_id": 313614424,
+          "author": "ctubbsii",
+          "comment": "I think tweaking the pretty-print is error prone... this could affect values."
+        },
+        {
+          "comment_id": 313616991,
+          "author": "ctubbsii",
+          "comment": "nit. There's a lot of extra whitespace in this code... a blank line between almost every statement."
+        }
+      ]
+    },
+    "mention_type": {
+      "value": "NOT_APPLICABLE",
+      "evidence": [
+        {
+          "comment_id": 313614424,
+          "author": "ctubbsii",
+          "comment": "I think tweaking the pretty-print is error prone... this could affect values."
+        }
+      ]
+    },
+    "test_td_type": {
+      "value": "NOT_APPLICABLE",
+      "evidence": [
+        {
+          "comment_id": 313616991,
+          "author": "ctubbsii",
+          "comment": "nit. There's a lot of extra whitespace in this code... a blank line between almost every statement."
+        }
+      ]
+    },
+    "sonarqube_rules_discussed": [
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S108",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S108",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S108",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1322,
+    "primary_pr_objective": {
+      "value": "IMP",
+      "evidence": [
+        {
+          "comment_id": 0,
+          "author": "PR title/description",
+          "comment": "Title: ACCUMULO-3455: ShellOptionsJC should extend ClientOpts; Description: The ticket seems outdated and while there is some overlap between the two classes, their use looks different enough to keep them separated. So I just unified their password handling."
+        }
+      ]
+    },
+    "suggestion_type": {
+      "value": "EXPLICIT",
+      "evidence": [
+        {
+          "comment_id": 312930491,
+          "author": "keith-turner",
+          "comment": "Should this document `stdin:` prefix?"
+        },
+        {
+          "comment_id": 312929964,
+          "author": "keith-turner",
+          "comment": "Should this document `stdin:` prefix and and a bare password with no prefix?"
+        }
+      ]
+    },
+    "agreement": {
+      "value": "AGREED",
+      "evidence": [
+        {
+          "comment_id": 312929964,
+          "author": "keith-turner",
+          "comment": "I can try to fix it up the documentation when I merge this."
+        },
+        {
+          "comment_id": 0,
+          "author": "keith-turner",
+          "comment": "thanks for the contribution I merged it with a few follow on changes in e604ec49e4e67e6256450c4b1df0c38c7508278a."
+        }
+      ]
+    },
+    "resolution": {
+      "value": "FIXED",
+      "evidence": [
+        {
+          "comment_id": 312929964,
+          "author": "keith-turner",
+          "comment": "I can try to fix it up the documentation when I merge this."
+        },
+        {
+          "comment_id": 0,
+          "author": "keith-turner",
+          "comment": "thanks for the contribution I merged it with a few follow on changes in e604ec49e4e67e6256450c4b1df0c38c7508278a."
+        }
+      ]
+    },
+    "test_td_mentioned": {
+      "value": "NO",
+      "evidence": [
+        {
+          "comment_id": 312930491,
+          "author": "keith-turner",
+          "comment": "Should this document `stdin:` prefix?"
+        },
+        {
+          "comment_id": 312929964,
+          "author": "keith-turner",
+          "comment": "Should this document `stdin:` prefix and and a bare password with no prefix?"
+        },
+        {
+          "comment_id": 312929964,
+          "author": "keith-turner",
+          "comment": "I can try to fix it up the documentation when I merge this."
+        }
+      ]
+    },
+    "mention_type": {
+      "value": "NOT_APPLICABLE",
+      "evidence": []
+    },
+    "test_td_type": {
+      "value": "NOT_APPLICABLE",
+      "evidence": []
+    },
+    "sonarqube_rules_discussed": [
+      {
+        "rule": "java:S1700",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S2095",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S2095",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      },
+      {
+        "rule": "java:S1192",
+        "mentioned": false,
+        "mention_type": "NOT_APPLICABLE",
+        "relationship": "NOT_DISCUSSED",
+        "evidence": []
+      }
+    ]
+  }
+]

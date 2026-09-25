@@ -1,0 +1,2610 @@
+[
+  {
+    "repo": "accumulo",
+    "pr_number": 1302,
+    "title": "Refactored tablet loading code to use Ample",
+    "description": null,
+    "metadata": {
+      "review_threads_count": 3,
+      "review_comments_count": 6,
+      "issue_comments_count": 0,
+      "sonar_issues_count": 23
+    },
+    "review_threads": [
+      {
+        "thread_id": 309449701,
+        "path": "core/src/main/java/org/apache/accumulo/core/metadata/schema/MetadataSchema.java",
+        "line": 187,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a97e0dc3bbbaff8b660599e05f29fad06b98d1b3",
+        "comments": [
+          {
+            "comment_id": 309449701,
+            "author": "ctubbsii",
+            "created_at": "2019-07-31T21:57:49Z",
+            "updated_at": "2019-08-01T21:24:26Z",
+            "body": "I think this might be causing a NumberFormat exception on empty string in the tests."
+          },
+          {
+            "comment_id": 309713225,
+            "author": "keith-turner",
+            "created_at": "2019-08-01T14:02:35Z",
+            "updated_at": "2019-08-01T21:24:26Z",
+            "body": "Do you know which test?"
+          },
+          {
+            "comment_id": 309844169,
+            "author": "ctubbsii",
+            "created_at": "2019-08-01T18:44:57Z",
+            "updated_at": "2019-08-01T21:24:26Z",
+            "body": "https://travis-ci.org/apache/accumulo/jobs/566489719 shows:\r\n\r\n```\r\n[ERROR]   TabletMetadataTest.testAllColumns:93 » NumberFormat For input string: \"\"\r\n```"
+          }
+        ]
+      },
+      {
+        "thread_id": 309929060,
+        "path": "core/src/test/java/org/apache/accumulo/core/metadata/schema/TabletMetadataTest.java",
+        "line": 106,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a97e0dc3bbbaff8b660599e05f29fad06b98d1b3",
+        "comments": [
+          {
+            "comment_id": 309929060,
+            "author": "ctubbsii",
+            "created_at": "2019-08-01T23:02:35Z",
+            "updated_at": "2019-08-01T23:02:35Z",
+            "body": "Does ordering matter for this check? One thing I've seen is that `Map.of` does not necessarily preserve \"insertion order\" (order based on args)."
+          },
+          {
+            "comment_id": 310187883,
+            "author": "keith-turner",
+            "created_at": "2019-08-02T15:38:16Z",
+            "updated_at": "2019-08-02T15:38:17Z",
+            "body": "I would not expect `Map.equals()` to care about the insertion order."
+          }
+        ]
+      },
+      {
+        "thread_id": 309447593,
+        "path": "server/tserver/src/test/java/org/apache/accumulo/tserver/CheckTabletMetadataTest.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a97e0dc3bbbaff8b660599e05f29fad06b98d1b3",
+        "comments": [
+          {
+            "comment_id": 309447593,
+            "author": "ctubbsii",
+            "created_at": "2019-07-31T21:51:17Z",
+            "updated_at": "2019-08-01T21:24:26Z",
+            "body": "This line is now causing a failure in spotbugs, because it is ignoring `Exception`. If the intent is to ignore the exceptions caught, spotbugs can generally be made happy by adding a comment in the block, like:\r\n```suggestion\r\n      // exception is expected\r\n```\r\n\r\nI don't know why this didn't bother spotbugs before."
+          }
+        ]
+      }
+    ],
+    "issue_comments": [],
+    "sonar_rules": [
+      {
+        "rule": "java:S5803",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/tserver/src/test/java/org/apache/accumulo/tserver/CheckTabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/tserver/src/test/java/org/apache/accumulo/tserver/CheckTabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/tserver/src/test/java/org/apache/accumulo/tserver/CheckTabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/tserver/src/test/java/org/apache/accumulo/tserver/CheckTabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/tserver/src/test/java/org/apache/accumulo/tserver/CheckTabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S5803",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/TabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/TabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/TabletMetadataTest.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S106",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S106",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S2184",
+        "severity": "MINOR",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S2184",
+        "severity": "MINOR",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S107",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S135",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/SplitRecoveryIT.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1304,
+    "title": "Fix #1281 Update TabletTime.maxMetatdataTime",
+    "description": "Replaced string processing with MetadataTime objects. \r\n\r\nRenamed MetadataTime class method valueOf(char) to getType(char) .  The valueOf was confusing and didn't really make sense once it was pulled from the ENUM TimeType class.\r\n\r\n",
+    "metadata": {
+      "review_threads_count": 1,
+      "review_comments_count": 4,
+      "issue_comments_count": 0,
+      "sonar_issues_count": 31
+    },
+    "review_threads": [
+      {
+        "thread_id": 309853948,
+        "path": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java",
+        "line": 36,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "15d28fce676e346cd2b23f53f1ab3cbd9e5e2e0e",
+        "comments": [
+          {
+            "comment_id": 309853948,
+            "author": "keith-turner",
+            "created_at": "2019-08-01T19:09:26Z",
+            "updated_at": "2019-08-01T19:42:26Z",
+            "body": "Seems like object like these could be created in MetadataTimeTest and that would make the test shorter."
+          },
+          {
+            "comment_id": 309858507,
+            "author": "hkeebler",
+            "created_at": "2019-08-01T19:22:29Z",
+            "updated_at": "2019-08-01T19:42:26Z",
+            "body": "agree, I was being lazy."
+          },
+          {
+            "comment_id": 309865810,
+            "author": "hkeebler",
+            "created_at": "2019-08-01T19:43:03Z",
+            "updated_at": "2019-08-01T19:43:04Z",
+            "body": "Last commit includes MetadataTimeTest cleanup. :)"
+          },
+          {
+            "comment_id": 309872288,
+            "author": "keith-turner",
+            "created_at": "2019-08-01T20:00:10Z",
+            "updated_at": "2019-08-01T20:00:11Z",
+            "body": "> agree, I was being lazy.\r\n\r\nI have written many hard to read test in the past.  Doing lots of code reviews has motivated me to spend more time making my test more readable.  My least favorite part of doing a code review is looking at the test, however I think a thorough review of the test pays future dividends so I do it.  When I saw how you made one test more readable I thought that would be nice in the other test."
+          }
+        ]
+      }
+    ],
+    "issue_comments": [],
+    "sonar_rules": [
+      {
+        "rule": "java:S1854",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S1481",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S1854",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S1481",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S1854",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S1481",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/metadata/schema/MetadataTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      },
+      {
+        "rule": "java:S100",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/base/src/test/java/org/apache/accumulo/server/tablets/TabletTimeTest.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1313,
+    "title": "fix #936 store root tablet file list in Zookeeper",
+    "description": "I just finished writing and testing this.  I plan to go back over it and review it myself after taking a bit of break from it.  Posting it as a draft in case anyone else wants to take a look.  The following overall changes were made :\r\n\r\n  * List of root tablet files are now stored in ZK\r\n  * The root tablets logical time is now stored in ZK\r\n * The compactID and flushID are now stored in ZK (should help with fixing #798)\r\n  * List of root tablet GC candidates are now stored in ZK\r\n  * Accumulo GC was modified to process root tablet files\r\n  * A lot of specialized code for managing the list of root tablet files was removed or moved to upgrade code.   ",
+    "metadata": {
+      "review_threads_count": 8,
+      "review_comments_count": 19,
+      "issue_comments_count": 2,
+      "sonar_issues_count": 7
+    },
+    "review_threads": [
+      {
+        "thread_id": 312205167,
+        "path": "core/src/main/java/org/apache/accumulo/core/metadata/schema/Ample.java",
+        "line": 68,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 312205167,
+            "author": "hkeebler",
+            "created_at": "2019-08-08T19:25:59Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "I like this!  Previous references throughout the code between RootTable and Metadata get confusing."
+          },
+          {
+            "comment_id": 312233749,
+            "author": "keith-turner",
+            "created_at": "2019-08-08T20:41:51Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "When I was reading gc candidates/del markers in the GC I did not have a specific table ID that I wanted to the info for, I just wanted to have it for the level.  So this was created to address that case and I found it cleaned up some other code."
+          }
+        ]
+      },
+      {
+        "thread_id": 313602409,
+        "path": "core/src/main/java/org/apache/accumulo/core/metadata/schema/TabletsMetadata.java",
+        "line": 199,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 313602409,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T20:41:16Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "This DataLevel concept and this conditional in particular seems eerily similar to a first pass I made several years ago at something like this: https://github.com/apache/accumulo/blob/757f62b5a1e2abd6d97d803f5325fdae622167eb/core/src/main/java/org/apache/accumulo/core/metadata/MetadataServicer.java#L41-L49\r\n\r\nI think it's probably worth reconciling those as a future / follow-on task."
+          },
+          {
+            "comment_id": 313897395,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:14:00Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "Its internal code and anyone could easily refactor it later.  "
+          }
+        ]
+      },
+      {
+        "thread_id": 313607805,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/fs/VolumeUtil.java",
+        "line": 279,
+        "start_line": null,
+        "side": "LEFT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 313607805,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T20:54:09Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "Love the removing of this special case. So nice."
+          },
+          {
+            "comment_id": 313897593,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:14:20Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "Yeah its nice to see the specialized code go away."
+          }
+        ]
+      },
+      {
+        "thread_id": 313608124,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/init/Initialize.java",
+        "line": 369,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 313608124,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T20:55:00Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "Is this really configurable?"
+          },
+          {
+            "comment_id": 313910088,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:36:44Z",
+            "updated_at": "2019-08-14T14:37:16Z",
+            "body": "I copied that code from another place in the class in order to make it work like it used to work.  I am not sure what it going on there exactly w/o investigating it.  "
+          }
+        ]
+      },
+      {
+        "thread_id": 313609064,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/init/Initialize.java",
+        "line": 370,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 313609064,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T20:57:25Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "Is this naming convention established anywhere? Where does `00000_00000` come from? Could have a utility method: `String getFileName(Long tabletId, Long fileId);` or whatever is appropriate. Seems weird to have this one file's name hard-coded. I guess it was like that before... it just moved up here, but still, it's weird."
+          },
+          {
+            "comment_id": 313898000,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:15:05Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "I think that may be an older naming convention.  I think its fine because it will not conflict with the newer convention."
+          },
+          {
+            "comment_id": 313972533,
+            "author": "ctubbsii",
+            "created_at": "2019-08-14T16:37:32Z",
+            "updated_at": "2019-08-14T16:37:33Z",
+            "body": "Good point."
+          }
+        ]
+      },
+      {
+        "thread_id": 313614424,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/metadata/RootGcCandidates.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 313614424,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T21:11:24Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "I think tweaking the pretty-print is error prone... this could affect values. We should either store minimized (my preference; can use jq or pretty print on display), or store pretty-print without modifications. Gson may also have an option to change the indent depth for its pretty-printer... which gets you the best of both.\r\n\r\nCould also just make this less error prone by replacing only spaces at the beginning of the line... but I don't know if that might still have issues on wrapped strings in JSON."
+          },
+          {
+            "comment_id": 313898234,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:15:28Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "That could be error prone, I will remove it."
+          },
+          {
+            "comment_id": 313907948,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:32:57Z",
+            "updated_at": "2019-08-14T14:32:57Z",
+            "body": "Removed it."
+          }
+        ]
+      },
+      {
+        "thread_id": 313617952,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/metadata/ServerAmpleImpl.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 313617952,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T21:20:37Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "Could just hard-code something like `256_000`"
+          },
+          {
+            "comment_id": 313907815,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:32:42Z",
+            "updated_at": "2019-08-14T14:32:42Z",
+            "body": "I updated it to a constant."
+          }
+        ]
+      },
+      {
+        "thread_id": 313616991,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/metadata/ServerAmpleImpl.java",
+        "line": 85,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "21231c47035e98aaacb5c93b23586c73e917c008",
+        "comments": [
+          {
+            "comment_id": 313616991,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T21:18:12Z",
+            "updated_at": "2019-08-14T14:31:16Z",
+            "body": "nit. There's a lot of extra whitespace in this code... a blank line between almost every statement. Seems a bit excessive, since I need to decrease my font size, or keep scrolling to see the larger context for the code."
+          },
+          {
+            "comment_id": 313907541,
+            "author": "keith-turner",
+            "created_at": "2019-08-14T14:32:08Z",
+            "updated_at": "2019-08-14T14:32:08Z",
+            "body": "The white space made sense to me because the single lines of code were doing such different things."
+          },
+          {
+            "comment_id": 313975351,
+            "author": "ctubbsii",
+            "created_at": "2019-08-14T16:44:25Z",
+            "updated_at": "2019-08-14T16:44:25Z",
+            "body": "It's fine... it's just harder to fit on a page to take it all in. It's not important."
+          }
+        ]
+      }
+    ],
+    "issue_comments": [
+      {
+        "comment_id": 519242129,
+        "author": "keith-turner",
+        "created_at": "2019-08-07T19:43:42Z",
+        "updated_at": "2019-08-07T19:43:42Z",
+        "body": "Below are tserver logs showing the root tablet compacting.  At the debug level the json stored in Zookeeper for the root tablet is shown.  In the logs below the files `A000004i.rf`and `F000004k.rf` were compacted into `A000004l.rf`.  After the compaction finished two things were updated in Zookeeper the list of deletion candidates and the list of files for the root tablet.  The json for both of those updates is shown below.\r\n\r\n\r\n```\r\n2019-08-07 15:39:07,782 [tablet.Tablet] DEBUG: Starting MajC +r<< (NORMAL) [hdfs://localhost:8020/accumulo/tables/+r/root_tablet/F000004k.rf, hdfs://localhost:8020/accumulo/tables/+r/root_tablet/A000004i.rf] -->\r\n hdfs://localhost:8020/accumulo/tables/+r/root_tablet/A000004l.rf_tmp []\r\n2019-08-07 15:39:07,840 [constraints.ConstraintChecker] DEBUG: Loaded constraint org.apache.accumulo.core.constraints.DefaultKeySizeConstraint for 1\r\n2019-08-07 15:39:08,317 [tablet.Compactor] DEBUG: Compaction +r<< 40 read | 17 written |    373 entries/sec |  0.107 secs |          821 bytes |  7672.897 byte/sec\r\n2019-08-07 15:39:08,324 [metadata.ServerAmpleImpl] DEBUG: Root GC candidates before change : {\r\n \"version\": 1,\r\n \"candidates\": {\r\n  \"hdfs://localhost:8020/accumulo/tables/+r/root_tablet\": [\r\n   \"A000004d.rf\",\r\n   \"F000004h.rf\"\r\n  ]\r\n }\r\n}\r\n2019-08-07 15:39:08,324 [metadata.ServerAmpleImpl] DEBUG: Root GC candidates after change  : {\r\n \"version\": 1,\r\n \"candidates\": {\r\n  \"hdfs://localhost:8020/accumulo/tables/+r/root_tablet\": [\r\n   \"A000004d.rf\",\r\n   \"A000004i.rf\",\r\n   \"F000004h.rf\",\r\n   \"F000004k.rf\"\r\n  ]\r\n }\r\n}\r\n2019-08-07 15:39:08,328 [metadata.RootTabletMutatorImpl] DEBUG: Before mutating : {\r\n  \"version\": 1,\r\n  \"columnValues\": {\r\n    \"file\": {\r\n      \"hdfs://localhost:8020/accumulo/tables/+r/root_tablet/A000004i.rf\": \"882,23\",\r\n      \"hdfs://localhost:8020/accumulo/tables/+r/root_tablet/F000004k.rf\": \"727,17\"\r\n    },\r\n    \"last\": {\r\n      \"100020b96f10015\": \"edev:9997\"\r\n    },\r\n    \"loc\": {\r\n      \"100020b96f10015\": \"edev:9997\"\r\n    },\r\n    \"srv\": {\r\n      \"dir\": \"hdfs://localhost:8020/accumulo/tables/+r/root_tablet\",\r\n      \"flush\": \"4\",\r\n      \"lock\": \"tservers/edev:9997/zlock-0000000000$100020b96f10015\",\r\n      \"time\": \"L39\"\r\n    },\r\n    \"~tab\": {\r\n      \"~pr\": \"\\u0000\"\r\n    }\r\n  }\r\n}, \r\n2019-08-07 15:39:08,329 [metadata.RootTabletMutatorImpl] DEBUG: After mutating : {\r\n  \"version\": 1,\r\n  \"columnValues\": {\r\n    \"file\": {\r\n      \"hdfs://localhost:8020/accumulo/tables/+r/root_tablet/A000004l.rf\": \"821,17\"\r\n    },\r\n    \"last\": {\r\n      \"100020b96f10015\": \"edev:9997\"\r\n    },\r\n    \"loc\": {\r\n      \"100020b96f10015\": \"edev:9997\"\r\n    },\r\n    \"srv\": {\r\n      \"dir\": \"hdfs://localhost:8020/accumulo/tables/+r/root_tablet\",\r\n      \"flush\": \"4\",\r\n      \"lock\": \"tservers/edev:9997/zlock-0000000000$100020b96f10015\",\r\n      \"time\": \"L39\"\r\n    },\r\n    \"~tab\": {\r\n      \"~pr\": \"\\u0000\"\r\n    }\r\n  }\r\n} \r\n```"
+      },
+      {
+        "comment_id": 521328284,
+        "author": "hkeebler",
+        "created_at": "2019-08-14T16:53:28Z",
+        "updated_at": "2019-08-14T16:53:28Z",
+        "body": "Can I say, woo hoo!"
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/upgrade/RootFilesUpgradeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/upgrade/RootFilesUpgradeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/upgrade/RootFilesUpgradeTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/state/RootTabletStateStoreTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/state/RootTabletStateStoreTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/state/RootTabletStateStoreTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/state/RootTabletStateStoreTest.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1322,
+    "title": "ACCUMULO-3455: ShellOptionsJC should extend ClientOpts",
+    "description": "The ticket seems outdated and while there is some overlap between the two classes, their use looks different enough to keep them separated. So I just unified their password handling.",
+    "metadata": {
+      "review_threads_count": 3,
+      "review_comments_count": 9,
+      "issue_comments_count": 1,
+      "sonar_issues_count": 8
+    },
+    "review_threads": [
+      {
+        "thread_id": 312931419,
+        "path": "core/src/main/java/org/apache/accumulo/core/cli/ClientOpts.java",
+        "line": 107,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "49cab617a30e97bf0cf5748a28b767520ddda927",
+        "comments": [
+          {
+            "comment_id": 312931419,
+            "author": "keith-turner",
+            "created_at": "2019-08-12T13:44:43Z",
+            "updated_at": "2019-08-12T13:44:50Z",
+            "body": "Would you happen to know where this processed?  I didn't see it.  If you are not sure I can look further."
+          },
+          {
+            "comment_id": 313259440,
+            "author": "BukrosSzabolcs",
+            "created_at": "2019-08-13T07:46:49Z",
+            "updated_at": "2019-08-13T07:46:49Z",
+            "body": "If I understand it correctly stdin is not a prefix, more like a placeholder. If the password is exactly \"stdin\" Shell.java at line 332 checks it and reads the actual bare password from console."
+          }
+        ]
+      },
+      {
+        "thread_id": 312930491,
+        "path": "core/src/main/java/org/apache/accumulo/core/cli/ClientOpts.java",
+        "line": 159,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "49cab617a30e97bf0cf5748a28b767520ddda927",
+        "comments": [
+          {
+            "comment_id": 312930491,
+            "author": "keith-turner",
+            "created_at": "2019-08-12T13:42:43Z",
+            "updated_at": "2019-08-12T13:44:50Z",
+            "body": "Should this document `stdin:` prefix?"
+          },
+          {
+            "comment_id": 313258238,
+            "author": "BukrosSzabolcs",
+            "created_at": "2019-08-13T07:43:15Z",
+            "updated_at": "2019-08-13T07:43:15Z",
+            "body": "Again I just re-used the original description, with the slight change of omitting the stdin case because I assume it might not work here."
+          },
+          {
+            "comment_id": 313491489,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T16:24:06Z",
+            "updated_at": "2019-08-13T16:24:06Z",
+            "body": "Yeah, I wouldn't expect stdin to work here."
+          }
+        ]
+      },
+      {
+        "thread_id": 312929964,
+        "path": "shell/src/main/java/org/apache/accumulo/shell/ShellOptionsJC.java",
+        "line": 45,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "49cab617a30e97bf0cf5748a28b767520ddda927",
+        "comments": [
+          {
+            "comment_id": 312929964,
+            "author": "keith-turner",
+            "created_at": "2019-08-12T13:41:36Z",
+            "updated_at": "2019-08-12T13:44:50Z",
+            "body": "Should this document `stdin:` prefix and and a bare password with no prefix?"
+          },
+          {
+            "comment_id": 313258199,
+            "author": "BukrosSzabolcs",
+            "created_at": "2019-08-13T07:43:06Z",
+            "updated_at": "2019-08-13T07:43:07Z",
+            "body": "I'm not sure why the original author choose not to describe these use-cases, so I left it as it was."
+          },
+          {
+            "comment_id": 313494422,
+            "author": "ctubbsii",
+            "created_at": "2019-08-13T16:29:54Z",
+            "updated_at": "2019-08-13T16:29:55Z",
+            "body": "I'm not sure either, but I wonder if it was because the shell already has a custom way of handling the stdin case if you don't use `-p` at all., so maybe it was a hidden, unneeded feature."
+          },
+          {
+            "comment_id": 313513997,
+            "author": "keith-turner",
+            "created_at": "2019-08-13T17:14:57Z",
+            "updated_at": "2019-08-13T17:14:57Z",
+            "body": "I can try to fix it up the documentation when I merge this."
+          }
+        ]
+      }
+    ],
+    "issue_comments": [
+      {
+        "comment_id": 520989549,
+        "author": "keith-turner",
+        "created_at": "2019-08-13T20:09:34Z",
+        "updated_at": "2019-08-13T20:09:34Z",
+        "body": "@BukrosSzabolcs  thanks for the contribution I merged it with a few follow on changes in e604ec49e4e67e6256450c4b1df0c38c7508278a.  If you would like to be added as a contributor on the website please submit a PR using the following link\r\n\r\nhttps://github.com/apache/accumulo-website/edit/master/pages/people.md"
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S1700",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/PasswordConverterTest.java"
+      },
+      {
+        "rule": "java:S2095",
+        "severity": "BLOCKER",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/PasswordConverterTest.java"
+      },
+      {
+        "rule": "java:S2095",
+        "severity": "BLOCKER",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/PasswordConverterTest.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/TestClientOpts.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/TestClientOpts.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/TestClientOpts.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/TestClientOpts.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/cli/TestClientOpts.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1329,
+    "title": "Fix #723 Replace finalize method uses with Cleaner",
+    "description": "I split this into two commits, in case it was easier to look at the NativeMap finalize methods separately from the others (they are much more \"critical path\").",
+    "metadata": {
+      "review_threads_count": 0,
+      "review_comments_count": 0,
+      "issue_comments_count": 3,
+      "sonar_issues_count": 50
+    },
+    "review_threads": [],
+    "issue_comments": [
+      {
+        "comment_id": 522361917,
+        "author": "ctubbsii",
+        "created_at": "2019-08-18T22:28:00Z",
+        "updated_at": "2019-08-18T22:28:00Z",
+        "body": "All ITs passed, twice."
+      },
+      {
+        "comment_id": 522784431,
+        "author": "ctubbsii",
+        "created_at": "2019-08-19T22:54:12Z",
+        "updated_at": "2019-08-19T22:54:12Z",
+        "body": "As follow-on, NativeMap, NMIterator, and ConcurrentIterator in NativeMap.java could all be made AutoCloseable, and the close method replace the delete methods. The NMSKVIter would still need a Cleaner, to clean up its ConcurrentIterator, though, because SortedKeyValueIterators aren't closeable."
+      },
+      {
+        "comment_id": 525506922,
+        "author": "ctubbsii",
+        "created_at": "2019-08-27T22:25:25Z",
+        "updated_at": "2019-08-27T22:25:25Z",
+        "body": "I'm going to merge this, so I can clear it off my TODO list, but I would appreciate any reviews after the fact that anybody is willing to offer."
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1168",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1168",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1168",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1168",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S1186",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S2184",
+        "severity": "MINOR",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S2189",
+        "severity": "BLOCKER",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/performance/NullTserver.java"
+      },
+      {
+        "rule": "java:S115",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S115",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S115",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S115",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S115",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S115",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S1845",
+        "severity": "BLOCKER",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S1845",
+        "severity": "BLOCKER",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S1845",
+        "severity": "BLOCKER",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S1845",
+        "severity": "BLOCKER",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S1845",
+        "severity": "BLOCKER",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S107",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S107",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S3776",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S1659",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S1141",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S2142",
+        "severity": "MAJOR",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/BatchWriterIterator.java"
+      },
+      {
+        "rule": "java:S3008",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/master/SuspendedTabletsIT.java"
+      },
+      {
+        "rule": "java:S3776",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/master/SuspendedTabletsIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/master/SuspendedTabletsIT.java"
+      },
+      {
+        "rule": "java:S1104",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/master/SuspendedTabletsIT.java"
+      },
+      {
+        "rule": "java:S1104",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/master/SuspendedTabletsIT.java"
+      },
+      {
+        "rule": "java:S1104",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/master/SuspendedTabletsIT.java"
+      },
+      {
+        "rule": "java:S2142",
+        "severity": "MAJOR",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/master/SuspendedTabletsIT.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1366,
+    "title": "Fix #1365 2.1 Upgrade processing for #1043 ~del",
+    "description": "This is fairly simple code to modify the ~del entries on the master upgrade startup.  The IT test is just for verification of the upgrade processsing and should probably not be included if this is actually merged.  Attempts to test this in a \"real time\" upgrade process were not successful due to errors unrelated to this code. (so she says ;))",
+    "metadata": {
+      "review_threads_count": 12,
+      "review_comments_count": 30,
+      "issue_comments_count": 5,
+      "sonar_issues_count": 13
+    },
+    "review_threads": [
+      {
+        "thread_id": 326727299,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/metadata/ServerAmpleImpl.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326727299,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T17:22:22Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Instead of using more Guava code here, this could use Java streams. I wan't sure how to get the stream for a scanner so I experimented locally.   I ended up with the following that at least compiles.\r\n\r\n```java\r\n  return StreamSupport.stream(scanner.spliterator(), false)\r\n    .filter(entry -> entry.getValue().equals(DeletesSection.SkewedKeyValue.NAME))\r\n    .map(entry -> DeletesSection.decodeRow(entry.getKey().getRow().toString())).iterator();\r\n```"
+          },
+          {
+            "comment_id": 327780237,
+            "author": "hkeebler",
+            "created_at": "2019-09-24T18:54:17Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "@keith-turner this also appears to work.  Why streams over iterators?  Curious."
+          },
+          {
+            "comment_id": 327782584,
+            "author": "keith-turner",
+            "created_at": "2019-09-24T19:00:00Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "> Why streams over iterators?\r\n\r\nI just think its nice to use functionality built into Java vs a third party library.  The Guava iterator utilities were created before Streams existed in Java."
+          }
+        ]
+      },
+      {
+        "thread_id": 328268914,
+        "path": "server/base/src/main/java/org/apache/accumulo/server/metadata/ServerAmpleImpl.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 328268914,
+            "author": "keith-turner",
+            "created_at": "2019-09-25T18:14:34Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "commented code"
+          },
+          {
+            "comment_id": 328302476,
+            "author": "hkeebler",
+            "created_at": "2019-09-25T19:34:08Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "blast. "
+          }
+        ]
+      },
+      {
+        "thread_id": 326203124,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326203124,
+            "author": "keith-turner",
+            "created_at": "2019-09-19T14:23:27Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "I really like this approach of setting something in the value.  I had hoped everything related to this change could be isolated to the upgrade code, but not that I am looking at the code I see that it can't.  While the upgrade code is running two other processes could also happen concurrently.   The Accumulo GC may be running and Metadata tablets could be compacting.  The Accumulo GC would see the old and new del markers.  Metadata table compactions could write out new delete markers which this code could corrupt.\r\n\r\nOne possible solution to this would be to always put something in the value for new style delete markers, which you mentioned doing in #1344.  Then AMPLE code could always ignore old style and new delete markers written out during upgrade would not be modified.   "
+          },
+          {
+            "comment_id": 326223699,
+            "author": "hkeebler",
+            "created_at": "2019-09-19T14:59:46Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "I guess tservers are started first and gc could be started before the master.  Blast.  This is a simple enough fix but it would be nice if  setting the value had some meaningful value ... ignore the pun.  Maybe just \"skewed\" to indicate the key was altered.  Then down the road if the desire is to change things back these are easily identifiable."
+          },
+          {
+            "comment_id": 326237452,
+            "author": "keith-turner",
+            "created_at": "2019-09-19T15:24:36Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Always putting `skewed` in the values sounds good to me.  Then Ample could ignore anything that does not have that in the value."
+          }
+        ]
+      },
+      {
+        "thread_id": 326713563,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326713563,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T16:44:18Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Could the constant UPGRADE be a Value?"
+          },
+          {
+            "comment_id": 327597899,
+            "author": "hkeebler",
+            "created_at": "2019-09-24T12:55:56Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Actually this should be changed to use ServerAmpleImpl.createDeleteMutation since we are adding a value all the time now.  Doh! on my part."
+          },
+          {
+            "comment_id": 327617113,
+            "author": "hkeebler",
+            "created_at": "2019-09-24T13:34:46Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "How do  you feel about updating Ample.DataLevel to include/return TableId?"
+          },
+          {
+            "comment_id": 327640741,
+            "author": "keith-turner",
+            "created_at": "2019-09-24T14:15:55Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "> How do you feel about updating Ample.DataLevel to include/return TableId?\r\n\r\nI am in favor."
+          }
+        ]
+      },
+      {
+        "thread_id": 326715446,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326715446,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T16:48:59Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Having `OLD_DELETE_PREFIX` seems like a good idea because it insulates the upgrade code from future changes to ` MetadataSchema.DeletesSection`.   However a few lines earlier `MetadataSchema.DeletesSection.getRange()`, which seems to invalidate the purpose of `OLD_DELETE_PREFIX`.  Seems like this code should not use ` MetadataSchema.DeletesSection` at all or only use `MetadataSchema.DeletesSection`, but not do something in between."
+          },
+          {
+            "comment_id": 327604574,
+            "author": "hkeebler",
+            "created_at": "2019-09-24T13:10:15Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "The range is still based on just \"~del\" ,  the section prefix before and after the upgrade. I previously took out:\r\n```java\r\npublic static String getRowPrefix() {\r\n      return section.getRowPrefix();\r\n```\r\nfrom MetadataSchema.Deletesection because it was only used in the upgrade.  I can put it back and use it instead of the constant.   The BlipSection has one o it was the norm.  \r\nDid I address your concern here?"
+          },
+          {
+            "comment_id": 328288441,
+            "author": "keith-turner",
+            "created_at": "2019-09-25T18:58:14Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "I think I misunderstood the purpose of `OLD_DELETE_PREFIX`.  I thought it was for isolating the upgrade code from future schema changes.  However, I think it was created because the constant no longer exists in `DeletesSection`."
+          }
+        ]
+      },
+      {
+        "thread_id": 326716347,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326716347,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T16:51:20Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "It may be useful to log at trace or debug what is deleted and added by this code."
+          }
+        ]
+      },
+      {
+        "thread_id": 326717136,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326717136,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T16:53:32Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "this is not good... could do `throw RuntimeException(e)`"
+          },
+          {
+            "comment_id": 327604875,
+            "author": "hkeebler",
+            "created_at": "2019-09-24T13:10:55Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Apologies, forgot go back and address this."
+          }
+        ]
+      },
+      {
+        "thread_id": 326720507,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326720507,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T17:02:54Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "There may be situations where  `deletes.size()` is empty and this will throw an exception.  Not sure about this, but it may make the code simpler to refactor this code as described in #1351 to remove the continue point. "
+          },
+          {
+            "comment_id": 327627573,
+            "author": "hkeebler",
+            "created_at": "2019-09-24T13:53:07Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Rethinking this altogether, sorry, it may be possible that if things are happening before the upgrade completes the delete loop would not end (extremely unlikely but possible)."
+          },
+          {
+            "comment_id": 327777153,
+            "author": "hkeebler",
+            "created_at": "2019-09-24T18:46:54Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "@keith-turner the solution in 1351 works well.  If an Iterator reflects a point in time (immutable) then this could never loop unless memory never gets cleaned up."
+          }
+        ]
+      },
+      {
+        "thread_id": 328265389,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 328265389,
+            "author": "keith-turner",
+            "created_at": "2019-09-25T18:06:37Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "This will sleep for the first loop iteration, which seems uneeded.   Not sure its worth adding complexity to code to avoid it."
+          },
+          {
+            "comment_id": 328304031,
+            "author": "hkeebler",
+            "created_at": "2019-09-25T19:38:03Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "yes.  I found that putting it at the beginning made better sense to free up memory.  Because the loop is holding onto the deletes structure, at the end caused it to continually process a single entry until something else caused some memory to free up.  Bottom line - it seemed to run more efficiently.  If it was permanent code I would worry more about it."
+          },
+          {
+            "comment_id": 328306129,
+            "author": "hkeebler",
+            "created_at": "2019-09-25T19:43:28Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "could do: \r\n```java\r\nint t = 0;\r\nwhile (oldCandidates.hasNext()) {\r\n        // give it some time for memory to clean itself up if needed\r\n        sleepUninterruptibly(t, TimeUnit.SECONDS);\r\n.....\r\n        t =5 (or even t += 1);\r\n} //eof while\r\n```"
+          },
+          {
+            "comment_id": 328307445,
+            "author": "keith-turner",
+            "created_at": "2019-09-25T19:47:03Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "I like doing `t = 0` and `t=5`.  If doing `t+=1` would probably want to constraint it via a max.  Since its for Java GC I am not sure what a good time range is though. "
+          },
+          {
+            "comment_id": 328311168,
+            "author": "hkeebler",
+            "created_at": "2019-09-25T19:55:53Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "I think I took it from a test or the GC code.  5 may be alot but it is \"in theory\" it is only upgrading once."
+          },
+          {
+            "comment_id": 328320957,
+            "author": "hkeebler",
+            "created_at": "2019-09-25T20:19:34Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "I guess this whole \"avoid out of memory\" error is a hit or miss - at least for the upgrader which is required to process all its data before finishing.  This last run took 9 minutes before memory was once again available (according to our code calculations).  In this case we assume full at 50% but the java GC is looking at the heap utilization.  Which in theory may not be effected if we stay below 50%, maybe.  Note that I need to set this number to 25% to make it happen."
+          }
+        ]
+      },
+      {
+        "thread_id": 326717605,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/upgrade/Upgrader9to10.java",
+        "line": 402,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326717605,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T16:54:55Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "very nice the way this code is structured, it should be idempotent"
+          }
+        ]
+      },
+      {
+        "thread_id": 326721918,
+        "path": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgradeTestIT.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326721918,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T17:07:04Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "Could do a stronger check here than just the count"
+          }
+        ]
+      },
+      {
+        "thread_id": 326722203,
+        "path": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgradeTestIT.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "bb70f138b96a67a5c93bd980bd0ecf2efe006372",
+        "comments": [
+          {
+            "comment_id": 326722203,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T17:07:54Z",
+            "updated_at": "2019-09-26T15:14:43Z",
+            "body": "nice"
+          }
+        ]
+      }
+    ],
+    "issue_comments": [
+      {
+        "comment_id": 532848280,
+        "author": "hkeebler",
+        "created_at": "2019-09-18T20:15:58Z",
+        "updated_at": "2019-09-18T20:15:58Z",
+        "body": "Also wanted to mention that the code was pretty much taken from the SimpleGarbageCollector and Ample processing of gc delete candidates."
+      },
+      {
+        "comment_id": 533271623,
+        "author": "hkeebler",
+        "created_at": "2019-09-19T19:20:10Z",
+        "updated_at": "2019-09-19T19:20:10Z",
+        "body": "Includes requested updates.  Ran -Psunny tests and related IT tests."
+      },
+      {
+        "comment_id": 535045476,
+        "author": "hkeebler",
+        "created_at": "2019-09-25T14:18:18Z",
+        "updated_at": "2019-09-25T14:49:57Z",
+        "body": "Latest commit addresses recent comments.  Big items:\r\n- refactor of continuepoint  usage\r\n- added test for no deletes to process on upgrade\r\nNote that this was tested to run out of memory and the refactor worked swimmingly."
+      },
+      {
+        "comment_id": 535555075,
+        "author": "hkeebler",
+        "created_at": "2019-09-26T15:21:37Z",
+        "updated_at": "2019-09-26T15:21:37Z",
+        "body": "Removed comment and adjusted timeout."
+      },
+      {
+        "comment_id": 535613866,
+        "author": "hkeebler",
+        "created_at": "2019-09-26T17:46:44Z",
+        "updated_at": "2019-09-26T17:46:44Z",
+        "body": "Since this has one approval , if no other comments received by Friday I will merge.  Thanks."
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S1155",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GarbageCollectorIT.java"
+      },
+      {
+        "rule": "java:S1075",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GarbageCollectorIT.java"
+      },
+      {
+        "rule": "java:S1659",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GarbageCollectorIT.java"
+      },
+      {
+        "rule": "java:S1481",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GarbageCollectorIT.java"
+      },
+      {
+        "rule": "java:S2095",
+        "severity": "BLOCKER",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S2095",
+        "severity": "BLOCKER",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S1602",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S2095",
+        "severity": "BLOCKER",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S1602",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      },
+      {
+        "rule": "java:S112",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/upgrade/GCUpgrade9to10TestIT.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1367,
+    "title": "Retry new Bulk import on merge. Fixes #471",
+    "description": null,
+    "metadata": {
+      "review_threads_count": 11,
+      "review_comments_count": 24,
+      "issue_comments_count": 2,
+      "sonar_issues_count": 6
+    },
+    "review_threads": [
+      {
+        "thread_id": 331713966,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/AccumuloBulkMergeException.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 331713966,
+            "author": "ctubbsii",
+            "created_at": "2019-10-04T23:10:38Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "```suggestion\r\n  private static final String MSG = \"Concurrent merge happened\";\r\n```"
+          }
+        ]
+      },
+      {
+        "thread_id": 331714000,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/AccumuloBulkMergeException.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 331714000,
+            "author": "ctubbsii",
+            "created_at": "2019-10-04T23:10:52Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "```suggestion\r\n    super(MSG, cause);\r\n```"
+          }
+        ]
+      },
+      {
+        "thread_id": 326418460,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/TableOperationsImpl.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 326418460,
+            "author": "ctubbsii",
+            "created_at": "2019-09-19T23:11:17Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "This retry loop could be pushed down into the doFateOperation implementation, to get it closer to the RPC. That way, if you add a new enum type to TableOperationExceptionType, you can check it before it is wrapped. This also prevents the thrift types from spreading too far away from the RPC code.\r\n\r\nSomething like the following in `doFateOperation` would work:\r\n```java\r\n    boolean retry = false;\r\n    do {\r\n      try {\r\n        // ... do fate RPC calls here\r\n      } catch (ThriftTableOperationException e) {\r\n        switch (e.getType()) {\r\n          // ... existing code\r\n          case BULK_WHILE_CONCURRENTLY_MERGING_SO_RETRY: // pick a better name for the enum\r\n             // log msg\r\n             retry = true;\r\n             break;\r\n          // ... existing code\r\n        }\r\n      }\r\n    } while(retry);"
+          }
+        ]
+      },
+      {
+        "thread_id": 326789466,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/TableOperationsImpl.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 326789466,
+            "author": "ctubbsii",
+            "created_at": "2019-09-20T20:23:06Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "This looks like it will infinitely retry on successful completion also. I think you want a `do...while(retry)` loop instead of `while(true)`."
+          },
+          {
+            "comment_id": 326790317,
+            "author": "milleruntime",
+            "created_at": "2019-09-20T20:25:34Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "The do while left with nothing to return at the bottom.  I guess I could just return null since it should never reach there."
+          },
+          {
+            "comment_id": 326801719,
+            "author": "ctubbsii",
+            "created_at": "2019-09-20T21:01:35Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I was wrong about it looping on successful. I misread the code."
+          }
+        ]
+      },
+      {
+        "thread_id": 326801456,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/TableOperationsImpl.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 326801456,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T21:00:39Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I think this is the wrong place to retry.  I think the load plan needs to be recomputed.  Could throw an internal (non-API) runtime exception here and catch that exception in the bulk code.  "
+          },
+          {
+            "comment_id": 326802446,
+            "author": "milleruntime",
+            "created_at": "2019-09-20T21:03:55Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "Ah yeah... good point about the plan being recomputed.  How do we handle the case where the user generates the plan?  I guess the plan will be different if we generate it, but the user plan will still be the same."
+          },
+          {
+            "comment_id": 326816488,
+            "author": "keith-turner",
+            "created_at": "2019-09-20T21:57:52Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "> How do we handle the case where the user generates the plan?\r\n\r\nDepends on the range types in the LoadPlan the user provided.  If the RangeType is TABLET, then an error needs to be thrown.  If the RangeType is FILE, then those could be recomputed."
+          },
+          {
+            "comment_id": 327217804,
+            "author": "milleruntime",
+            "created_at": "2019-09-23T16:42:54Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "OK thanks.  I think this is a good spot to throw a custom exception though, based on this Thrift type.  "
+          }
+        ]
+      },
+      {
+        "thread_id": 331714931,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/bulk/BulkImport.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 331714931,
+            "author": "ctubbsii",
+            "created_at": "2019-10-04T23:16:21Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "Might be a good idea to pass `ae` down, and add it as a suppressed exception later."
+          }
+        ]
+      },
+      {
+        "thread_id": 331715031,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/bulk/BulkImport.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 331715031,
+            "author": "ctubbsii",
+            "created_at": "2019-10-04T23:16:55Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "Could pass in `ae` from above code, and include it as a suppressed exception here... or even a cause."
+          },
+          {
+            "comment_id": 332083134,
+            "author": "milleruntime",
+            "created_at": "2019-10-07T15:23:40Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I was thinking it wouldn't be useful to the user but I guess it wouldn't hurt to include the AccumuloBulkMergeException"
+          }
+        ]
+      },
+      {
+        "thread_id": 333566903,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/bulk/BulkImport.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 333566903,
+            "author": "keith-turner",
+            "created_at": "2019-10-10T14:51:11Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I would set the max to a minute or two."
+          },
+          {
+            "comment_id": 333618435,
+            "author": "milleruntime",
+            "created_at": "2019-10-10T16:28:32Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I don't see a way to set a max total time with Retry... we either have to use ```infiniteRetries()``` or set a number of retries with ```maxRetries(long max)```"
+          },
+          {
+            "comment_id": 333626498,
+            "author": "keith-turner",
+            "created_at": "2019-10-10T16:47:13Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I was thinking of setting `maxWait(` higher"
+          },
+          {
+            "comment_id": 333628331,
+            "author": "milleruntime",
+            "created_at": "2019-10-10T16:51:11Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "Ah I see.  Yeah that would be better"
+          }
+        ]
+      },
+      {
+        "thread_id": 332102159,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/bulk/BulkImport.java",
+        "line": 166,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 332102159,
+            "author": "keith-turner",
+            "created_at": "2019-10-07T15:58:45Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "This will retry immediately.  Could use an Accumulo Retry object to sleep between retries."
+          },
+          {
+            "comment_id": 332236952,
+            "author": "milleruntime",
+            "created_at": "2019-10-07T21:07:39Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I added a retry similar to the one in TableOperationsImpl.locate() in cebc776 but will have to setup a cluster to test it. "
+          },
+          {
+            "comment_id": 332628233,
+            "author": "keith-turner",
+            "created_at": "2019-10-08T17:06:16Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "> but will have to setup a cluster to test it.\r\n\r\nYeah this would be hard to test in at IT since its a concurrency issue.  "
+          }
+        ]
+      },
+      {
+        "thread_id": 332101667,
+        "path": "core/src/main/java/org/apache/accumulo/core/clientImpl/bulk/BulkImport.java",
+        "line": 167,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 332101667,
+            "author": "keith-turner",
+            "created_at": "2019-10-07T15:57:52Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "Could mention why its retrying, because a concurrent merge happened."
+          },
+          {
+            "comment_id": 332109877,
+            "author": "milleruntime",
+            "created_at": "2019-10-07T16:14:33Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "That is what ```ae.getMessage()``` should print.  "
+          },
+          {
+            "comment_id": 332117664,
+            "author": "keith-turner",
+            "created_at": "2019-10-07T16:31:34Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "I missed that."
+          }
+        ]
+      },
+      {
+        "thread_id": 326414019,
+        "path": "server/master/src/main/java/org/apache/accumulo/master/tableOps/bulkVer2/PrepBulkImport.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "a99093652bcc9f136ea778c47b356e773ecbe4e0",
+        "comments": [
+          {
+            "comment_id": 326414019,
+            "author": "ctubbsii",
+            "created_at": "2019-09-19T22:50:36Z",
+            "updated_at": "2019-10-10T17:50:32Z",
+            "body": "Rather than rely on \"OTHER\" with a specific message, we should add a new enum type to `TableOperationExceptionType` to use for this case."
+          }
+        ]
+      }
+    ],
+    "issue_comments": [
+      {
+        "comment_id": 533686193,
+        "author": "milleruntime",
+        "created_at": "2019-09-20T19:45:54Z",
+        "updated_at": "2019-09-20T19:45:54Z",
+        "body": "Updated based on feedback but it looks like this change causes infinite retries if the load plan is bad.  I am seeing NewBulkIT.testBadLoadPlans() go forever. "
+      },
+      {
+        "comment_id": 540699698,
+        "author": "milleruntime",
+        "created_at": "2019-10-10T17:54:02Z",
+        "updated_at": "2019-10-10T17:54:02Z",
+        "body": "I confirmed that the client will retry using Rwalk locally with multiple concurrent tests running.  "
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S3776",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/tableOps/bulkVer2/PrepBulkImportTest.java"
+      },
+      {
+        "rule": "java:S3776",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "CLOSED",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/tableOps/bulkVer2/PrepBulkImportTest.java"
+      },
+      {
+        "rule": "java:S120",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/tableOps/bulkVer2/PrepBulkImportTest.java"
+      },
+      {
+        "rule": "java:S1155",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/tableOps/bulkVer2/PrepBulkImportTest.java"
+      },
+      {
+        "rule": "java:S5803",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/tableOps/bulkVer2/PrepBulkImportTest.java"
+      },
+      {
+        "rule": "java:S5803",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "server/master/src/test/java/org/apache/accumulo/master/tableOps/bulkVer2/PrepBulkImportTest.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1381,
+    "title": "Update gc metrics reporting to use hadoop metrics2",
+    "description": "- Publish current gc metrics to hadoop 2 metrics reporting system.\r\n- Add gc run counter that increments on each gc cycle run\r\n- Add metric to track time required for gc post op (compact, flush, none)\r\n- Improved testing using a metrics2 file sink for it tests.",
+    "metadata": {
+      "review_threads_count": 10,
+      "review_comments_count": 12,
+      "issue_comments_count": 1,
+      "sonar_issues_count": 7
+    },
+    "review_threads": [
+      {
+        "thread_id": 331296223,
+        "path": "core/src/main/java/org/apache/accumulo/core/conf/Property.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 331296223,
+            "author": "ctubbsii",
+            "created_at": "2019-10-03T23:42:18Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "I think the following name change would make the property more consistent with similar props:\r\n\r\n```suggestion\r\n  GC_METRICS_ENABLED(\"gc.metrics.enabled\", \"true\", PropertyType.BOOLEAN,\r\n```"
+          }
+        ]
+      },
+      {
+        "thread_id": 332285056,
+        "path": "core/src/main/java/org/apache/accumulo/core/conf/Property.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 332285056,
+            "author": "ctubbsii",
+            "created_at": "2019-10-07T23:49:03Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "For consistency, with other configs, I suggest:\r\n\r\n```suggestion\r\n  GC_METRICS_ENABLED(\"gc.metrics.enabled\", \"true\", PropertyType.BOOLEAN,\r\n```"
+          }
+        ]
+      },
+      {
+        "thread_id": 332286642,
+        "path": "server/gc/src/main/java/org/apache/accumulo/gc/metrics/GcCycleMetrics.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 332286642,
+            "author": "ctubbsii",
+            "created_at": "2019-10-07T23:56:27Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "```suggestion\r\n   * Set the counter for number of completed gc collection cycles to the provided value. The value is\r\n```"
+          }
+        ]
+      },
+      {
+        "thread_id": 332287063,
+        "path": "server/gc/src/main/java/org/apache/accumulo/gc/metrics/GcCycleMetrics.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 332287063,
+            "author": "ctubbsii",
+            "created_at": "2019-10-07T23:58:15Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "I don't see the method setting this to zero as described. The code should reflect the description.\r\n(Also, another option to setting it to zero would be to leave it as is, and not set it at all.)"
+          },
+          {
+            "comment_id": 332628331,
+            "author": "EdColeman",
+            "created_at": "2019-10-08T17:06:30Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "This method was unused - so I opted to remove it - the not setting to zero was an error on my part."
+          }
+        ]
+      },
+      {
+        "thread_id": 331296599,
+        "path": "server/gc/src/main/java/org/apache/accumulo/gc/metrics2/GcCycleMetrics.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 331296599,
+            "author": "ctubbsii",
+            "created_at": "2019-10-03T23:44:12Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "I think the package name could be more consistent with metrics packages in other components:\r\n\r\n```suggestion\r\npackage org.apache.accumulo.gc.metrics;\r\n```"
+          }
+        ]
+      },
+      {
+        "thread_id": 331297238,
+        "path": "server/gc/src/main/java/org/apache/accumulo/gc/metrics2/GcCycleMetrics.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 331297238,
+            "author": "ctubbsii",
+            "created_at": "2019-10-03T23:47:11Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "Copy/paste error. This javadoc is wrong."
+          }
+        ]
+      },
+      {
+        "thread_id": 331297325,
+        "path": "server/gc/src/main/java/org/apache/accumulo/gc/metrics2/GcCycleMetrics.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 331297325,
+            "author": "ctubbsii",
+            "created_at": "2019-10-03T23:47:36Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "Copy/paste error. This javadoc is half-wrong."
+          }
+        ]
+      },
+      {
+        "thread_id": 331297633,
+        "path": "server/gc/src/main/java/org/apache/accumulo/gc/metrics2/GcHadoopMetrics2.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 331297633,
+            "author": "ctubbsii",
+            "created_at": "2019-10-03T23:49:16Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "This separate class looks like a holdover from when the legacy metrics and the Hadoop Metrics2 implementations were split. Since we dropped the legacy metrics, there is only the Metrics2, so this can be merged into the GcMetrics class, following the same pattern as all the other metrics implementations."
+          }
+        ]
+      },
+      {
+        "thread_id": 331254209,
+        "path": "server/gc/src/main/java/org/apache/accumulo/gc/metrics2/package-info.java",
+        "line": null,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 331254209,
+            "author": "ctubbsii",
+            "created_at": "2019-10-03T21:08:53Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "Rather than a `package-info.java` file, some of this info might be more useful as a class-level javadoc on `server/base/src/main/java/org/apache/accumulo/server/metrics/Metrics.java`, and the remaining would probably be useful on either `GcMetrics` or `GcMetricsFactory`."
+          }
+        ]
+      },
+      {
+        "thread_id": 331298587,
+        "path": "test/src/main/java/org/apache/accumulo/test/metrics/MetricsFileTailer.java",
+        "line": 73,
+        "start_line": null,
+        "side": "RIGHT",
+        "commit_id": "6464449a554c0553fbbb8604b652503d410ee83f",
+        "comments": [
+          {
+            "comment_id": 331298587,
+            "author": "ctubbsii",
+            "created_at": "2019-10-03T23:54:24Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "I wonder if it would be easier if we wrote our own metrics sink to use for testing, rather than use the FileSink with something like this. Could be something for future."
+          },
+          {
+            "comment_id": 332140111,
+            "author": "EdColeman",
+            "created_at": "2019-10-07T17:22:00Z",
+            "updated_at": "2019-10-08T17:21:01Z",
+            "body": "The first attempt did have a custom sink that used http / REST, but in minimizing adding external dependencies, it made porting from 1.9 to 2.x more difficult.  There were also conflicts with hadoop metrics2 and the hadoop shaded jars that I did not resolve.\r\n\r\nThe approach may still be valid and will be revisited going forward, but the file sync does provide some basic functionality that was useful to testing during development."
+          }
+        ]
+      }
+    ],
+    "issue_comments": [
+      {
+        "comment_id": 539171793,
+        "author": "EdColeman",
+        "created_at": "2019-10-07T19:41:07Z",
+        "updated_at": "2019-10-07T19:41:07Z",
+        "body": "Update incorporates (hopefully) all of the suggestions from @ctubbsii "
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      },
+      {
+        "rule": "java:S2095",
+        "severity": "BLOCKER",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/metrics/MetricsFileTailer.java"
+      },
+      {
+        "rule": "java:S2142",
+        "severity": "MAJOR",
+        "type": "BUG",
+        "status": "OPEN",
+        "file": "test/src/test/java/org/apache/accumulo/test/metrics/MetricsFileTailerTest.java"
+      },
+      {
+        "rule": "java:S1118",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/metrics/MetricsTestSinkProperties.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1400,
+    "title": "Move AbstractLexicoder to API",
+    "description": "Curious as to why this is the only lexicoder class not in the public API... this change will assist in #1390",
+    "metadata": {
+      "review_threads_count": 0,
+      "review_comments_count": 0,
+      "issue_comments_count": 5,
+      "sonar_issues_count": 6
+    },
+    "review_threads": [],
+    "issue_comments": [
+      {
+        "comment_id": 547632355,
+        "author": "milleruntime",
+        "created_at": "2019-10-29T21:14:17Z",
+        "updated_at": "2019-10-29T21:14:17Z",
+        "body": "Another option would be to drop this class altogether and have the lexicoders implement the Lexicoder interface directly"
+      },
+      {
+        "comment_id": 548148990,
+        "author": "milleruntime",
+        "created_at": "2019-10-30T23:03:43Z",
+        "updated_at": "2019-10-30T23:03:43Z",
+        "body": "> I had some reservations initially, because there's already two type hierarchies in the lexicoder package for public API, and I wasn't sure if this would complicate things, but I now think it's probably fine.\r\n\r\nI am leaning towards just removing the class since it is in the impl package and we don't need both."
+      },
+      {
+        "comment_id": 548941480,
+        "author": "milleruntime",
+        "created_at": "2019-11-01T20:35:32Z",
+        "updated_at": "2019-11-01T20:35:32Z",
+        "body": "> > I had some reservations initially, because there's already two type hierarchies in the lexicoder package for public API, and I wasn't sure if this would complicate things, but I now think it's probably fine.\r\n> \r\n> I am leaning towards just removing the class since it is in the impl package and we don't need both.\r\n\r\nAfter looking into this, I discovered that all the lexicoder tests use this class so I think moving it is fine."
+      },
+      {
+        "comment_id": 948980087,
+        "author": "milleruntime",
+        "created_at": "2021-10-21T20:30:15Z",
+        "updated_at": "2021-10-21T20:30:15Z",
+        "body": "@ctubbsii @keith-turner before this change was made, there were many classes in the `org.apache.accumulo.core.client.lexicoder` package that extend `org.apache.accumulo.core.clientImpl.lexicoder.AbstractLexicoder`. I can't figure out why the apilyzer plugin didn't hit on the super of these classes being the AbstractLexicoder in the `clientImpl.lexicoder` package. Since the parent class is in a `clientImpl` package, I would think this would violate the API by exposing an internal type and get dinged by the plugin. Could this be a bug with the plugin? Any ideas?"
+      },
+      {
+        "comment_id": 951153346,
+        "author": "ctubbsii",
+        "created_at": "2021-10-25T17:39:30Z",
+        "updated_at": "2021-10-25T17:39:30Z",
+        "body": "> I can't figure out why the apilyzer plugin didn't hit on the super of these classes being the AbstractLexicoder in the `clientImpl.lexicoder` package. Since the parent class is in a `clientImpl` package, I would think this would violate the API by exposing an internal type and get dinged by the plugin. Could this be a bug with the plugin? Any ideas?\r\n\r\nI think this wasn't a feature of the plugin originally and that it was caught after that feature was added. It's either that, or there was a bug. There may still be some limitations to the apilyzer plugin. If there's a gap in the feature set of the plugin, it can be reported at https://github.com/revelc/apilyzer-maven-plugin"
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S120",
+        "severity": "MINOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/clientImpl/lexicoder/AbstractLexicoderTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/clientImpl/lexicoder/AbstractLexicoderTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/clientImpl/lexicoder/AbstractLexicoderTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/clientImpl/lexicoder/AbstractLexicoderTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/clientImpl/lexicoder/AbstractLexicoderTest.java"
+      },
+      {
+        "rule": "java:S108",
+        "severity": "MAJOR",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "core/src/test/java/org/apache/accumulo/core/clientImpl/lexicoder/AbstractLexicoderTest.java"
+      }
+    ]
+  },
+  {
+    "repo": "accumulo",
+    "pr_number": 1402,
+    "title": "Fix GcMetricsIT test when multiple IT tests run",
+    "description": "The test previously did not account for metrics that were published from previous runs or if multiple IT tests were run without cleaning the target directory.  The metrics are read from a file that is appended, so previous test values could cause test failures - with this change, the GcMetricsIT test ignores the first line and then processes the subsequent updates generated during the test.",
+    "metadata": {
+      "review_threads_count": 0,
+      "review_comments_count": 0,
+      "issue_comments_count": 1,
+      "sonar_issues_count": 4
+    },
+    "review_threads": [],
+    "issue_comments": [
+      {
+        "comment_id": 548053244,
+        "author": "EdColeman",
+        "created_at": "2019-10-30T18:32:34Z",
+        "updated_at": "2019-10-30T18:32:34Z",
+        "body": "I've been working on the back-port and being that the underlying code in this test is shared with the fate concurrency and fate metrics, I've been running the 3 IT tests each time, and that's when this began to fail. It was fine stand-alone and in the IDE.  Being that the file is created by the metrics subsystem, it seemed preferable to treat the metrics subsystem as the \"owner\" and then just deal with it."
+      }
+    ],
+    "sonar_rules": [
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      },
+      {
+        "rule": "java:S1192",
+        "severity": "CRITICAL",
+        "type": "CODE_SMELL",
+        "status": "OPEN",
+        "file": "test/src/main/java/org/apache/accumulo/test/functional/GcMetricsIT.java"
+      }
+    ]
+  }
+]
