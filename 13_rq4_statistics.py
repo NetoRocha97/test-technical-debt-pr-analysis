@@ -1,11 +1,13 @@
+
 import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 # ==========================================================
-# ARQUIVOS
+# FILE PATHS
 # ==========================================================
 
 RESULT_FILE = "data/llm_results_final.json"
@@ -17,8 +19,9 @@ OUTPUT_DIR.mkdir(
     exist_ok=True
 )
 
+
 # ==========================================================
-# CARREGA RESULTADOS
+# LOAD RESULTS
 # ==========================================================
 
 with open(
@@ -28,116 +31,99 @@ with open(
 
     prs = json.load(f)
 
+
 # ==========================================================
-# DATAFRAME
+# CREATE DATAFRAME
 # ==========================================================
 
-dados = []
+data = []
 
 for pr in prs:
 
-    dados.append({
+    data.append({
 
-        "repo":
-            pr["repo"],
+        "repo": pr["repo"],
 
-        "test_td_mentioned":
-            pr["test_td_mentioned"]["value"],
+        "test_td_mentioned": pr["test_td_mentioned"]["value"],
 
-        "mention_type":
-            pr["mention_type"]["value"],
+        "mention_type": pr["mention_type"]["value"],
 
-        "test_td_type":
-            pr["test_td_type"]["value"],
+        "test_td_type": pr["test_td_type"]["value"],
 
-        "agreement":
-            pr["agreement"]["value"],
+        "agreement": pr["agreement"]["value"],
 
-        "resolution":
-            pr["resolution"]["value"]
+        "resolution": pr["resolution"]["value"]
 
     })
 
-df = pd.DataFrame(dados)
+df = pd.DataFrame(data)
+
 
 # ==========================================================
-# FUNÇÕES
+# STATISTICAL FUNCTIONS
 # ==========================================================
 
-def gerar_resumo(coluna):
+def generate_summary(column):
 
-    resumo = (
+    summary = (
 
-        df[coluna]
+        df[column]
 
         .value_counts()
 
-        .rename_axis(coluna)
+        .rename_axis(column)
 
         .reset_index(name="Count")
 
     )
 
-    resumo["Percentage"] = (
+    summary["Percentage"] = (
 
-        resumo["Count"]
+        summary["Count"]
 
-        / resumo["Count"].sum()
+        / summary["Count"].sum()
 
         * 100
 
     ).round(2)
 
-    return resumo
+    return summary
 
 
-def salvar_tabela(resumo, nome):
+def save_table(summary, name):
 
-    csv_file = OUTPUT_DIR / f"{nome}.csv"
+    csv_file = OUTPUT_DIR / f"{name}.csv"
 
-    xlsx_file = OUTPUT_DIR / f"{nome}.xlsx"
+    xlsx_file = OUTPUT_DIR / f"{name}.xlsx"
 
-    resumo.to_csv(
-
+    summary.to_csv(
         csv_file,
-
         index=False,
-
         encoding="utf8"
-
     )
 
-    resumo.to_excel(
-
+    summary.to_excel(
         xlsx_file,
-
         index=False
-
     )
 
     return csv_file, xlsx_file
 
+
 # ==========================================================
-# GRÁFICOS
+# GENERATE CHARTS
 # ==========================================================
 
-def gerar_graficos(resumo, titulo, nome):
+def generate_charts(summary, title, name):
 
-    # -------------------------
-    # Barras
-    # -------------------------
-
-    plt.figure(figsize=(9,5))
+    plt.figure(figsize=(9, 5))
 
     bars = plt.bar(
-
-        resumo.iloc[:,0],
-
-        resumo["Count"]
-
+        summary.iloc[:, 0],
+        summary["Count"]
     )
 
-    plt.title(titulo)
+    plt.title(title)
 
     plt.xlabel("Category")
 
@@ -147,169 +133,111 @@ def gerar_graficos(resumo, titulo, nome):
 
     for bar in bars:
 
-        altura = bar.get_height()
+        height = bar.get_height()
 
         plt.text(
-
-            bar.get_x() + bar.get_width()/2,
-
-            altura,
-
-            str(int(altura)),
-
+            bar.get_x() + bar.get_width() / 2,
+            height,
+            str(int(height)),
             ha="center",
-
             va="bottom",
-
             fontsize=9
-
         )
 
     plt.tight_layout()
 
     plt.savefig(
-
-        OUTPUT_DIR / f"{nome}_bar.png",
-
+        OUTPUT_DIR / f"{name}_bar.png",
         dpi=300
-
     )
 
     plt.close()
 
-    # -------------------------
-    # Pizza
-    # -------------------------
-
-    plt.figure(figsize=(7,7))
+    plt.figure(figsize=(7, 7))
 
     plt.pie(
-
-        resumo["Count"],
-
-        labels=resumo.iloc[:,0],
-
+        summary["Count"],
+        labels=summary.iloc[:, 0],
         autopct="%1.1f%%",
-
         startangle=90
-
     )
 
-    plt.title(titulo)
+    plt.title(title)
 
     plt.tight_layout()
 
     plt.savefig(
-
-        OUTPUT_DIR / f"{nome}_pie.png",
-
+        OUTPUT_DIR / f"{name}_pie.png",
         dpi=300
-
     )
 
     plt.close()
 
 
 # ==========================================================
-# ESTATÍSTICAS PRINCIPAIS
+# MAIN STATISTICS
 # ==========================================================
 
-summary_mentioned = gerar_resumo(
-
+summary_mentioned = generate_summary(
     "test_td_mentioned"
-
 )
 
-summary_mention_type = gerar_resumo(
-
+summary_mention_type = generate_summary(
     "mention_type"
-
 )
 
-summary_td_type = gerar_resumo(
-
+summary_td_type = generate_summary(
     "test_td_type"
-
 )
 
-
-salvar_tabela(
-
+save_table(
     summary_mentioned,
-
     "test_td_mentioned"
-
 )
 
-salvar_tabela(
-
+save_table(
     summary_mention_type,
-
     "mention_type"
-
 )
 
-salvar_tabela(
-
+save_table(
     summary_td_type,
-
     "test_td_type"
-
 )
 
-
-gerar_graficos(
-
+generate_charts(
     summary_mentioned,
-
     "RQ4 - Test TD Mentioned",
-
     "test_td_mentioned"
-
 )
 
-gerar_graficos(
-
+generate_charts(
     summary_mention_type,
-
     "RQ4 - Mention Type",
-
     "mention_type"
-
 )
 
-gerar_graficos(
-
+generate_charts(
     summary_td_type,
-
     "RQ4 - Test TD Type",
-
     "test_td_type"
-
 )
+
 
 # ==========================================================
-# HOW ARE THEY ADDRESSED?
+# HOW ARE TEST TDs ADDRESSED?
 # ==========================================================
 
 agreement_by_td = pd.crosstab(
-
     df["test_td_type"],
-
     df["agreement"],
-
     margins=True
-
 )
 
 resolution_by_td = pd.crosstab(
-
     df["test_td_type"],
-
     df["resolution"],
-
     margins=True
-
 )
 
 agreement_file = OUTPUT_DIR / "agreement_by_td_type.xlsx"
@@ -317,31 +245,24 @@ agreement_file = OUTPUT_DIR / "agreement_by_td_type.xlsx"
 resolution_file = OUTPUT_DIR / "resolution_by_td_type.xlsx"
 
 agreement_by_td.to_excel(
-
     agreement_file
-
 )
 
 resolution_by_td.to_excel(
-
     resolution_file
-
 )
 
+
 # ==========================================================
-# PORCENTAGENS POR LINHA
+# ROW-WISE PERCENTAGES
 # ==========================================================
 
 agreement_percentage = (
 
     pd.crosstab(
-
         df["test_td_type"],
-
         df["agreement"],
-
         normalize="index"
-
     )
 
     * 100
@@ -351,13 +272,9 @@ agreement_percentage = (
 resolution_percentage = (
 
     pd.crosstab(
-
         df["test_td_type"],
-
         df["resolution"],
-
         normalize="index"
-
     )
 
     * 100
@@ -365,136 +282,90 @@ resolution_percentage = (
 ).round(2)
 
 agreement_percentage_file = (
-
     OUTPUT_DIR /
-
     "agreement_by_td_type_percentage.xlsx"
-
 )
 
 resolution_percentage_file = (
-
     OUTPUT_DIR /
-
     "resolution_by_td_type_percentage.xlsx"
-
 )
 
 agreement_percentage.to_excel(
-
     agreement_percentage_file
-
 )
 
 resolution_percentage.to_excel(
-
     resolution_percentage_file
-
 )
 
+
 # ==========================================================
-# ESTATÍSTICAS POR PROJETO
+# PER-PROJECT STATISTICS
 # ==========================================================
 
 PROJECT_FILE = OUTPUT_DIR / "rq4_by_project.xlsx"
 
 with pd.ExcelWriter(
-
     PROJECT_FILE,
-
     engine="openpyxl"
-
 ) as writer:
 
     pd.crosstab(
-
         df["repo"],
-
         df["test_td_mentioned"]
-
     ).to_excel(
-
         writer,
-
         sheet_name="test_td_mentioned"
-
     )
 
     pd.crosstab(
-
         df["repo"],
-
         df["mention_type"]
-
     ).to_excel(
-
         writer,
-
         sheet_name="mention_type"
-
     )
 
     pd.crosstab(
-
         df["repo"],
-
         df["test_td_type"]
-
     ).to_excel(
-
         writer,
-
         sheet_name="test_td_type"
-
     )
 
     agreement_by_td.to_excel(
-
         writer,
-
         sheet_name="agreement_by_type"
-
     )
 
     resolution_by_td.to_excel(
-
         writer,
-
         sheet_name="resolution_by_type"
-
     )
 
     agreement_percentage.to_excel(
-
         writer,
-
         sheet_name="agreement_%"
-
     )
 
     resolution_percentage.to_excel(
-
         writer,
-
         sheet_name="resolution_%"
-
     )
 
 
 # ==========================================================
-# RELATÓRIO TXT
+# GENERATE TEXT REPORT
 # ==========================================================
 
 TXT_FILE = OUTPUT_DIR / "rq4_results.txt"
 
 with open(
-
     TXT_FILE,
-
     "w",
-
     encoding="utf8"
-
 ) as f:
 
     f.write("=" * 70 + "\n")
@@ -504,20 +375,15 @@ with open(
     f.write("=" * 70 + "\n\n")
 
     f.write(
-
         "Research Question:\n"
-
     )
 
     f.write(
-
         "What types of Technical Debt in test code are most frequently discussed "
-
         "and how are they addressed in Pull Requests?\n\n"
-
     )
 
-    for titulo, tabela in [
+    for title, table in [
 
         ("Test TD Mentioned", summary_mentioned),
 
@@ -527,20 +393,16 @@ with open(
 
     ]:
 
-        f.write(titulo + "\n")
+        f.write(title + "\n")
 
         f.write("-" * 50 + "\n")
 
-        for _, row in tabela.iterrows():
+        for _, row in table.iterrows():
 
             f.write(
-
                 f"{row.iloc[0]}: "
-
                 f"{row['Count']} "
-
                 f"({row['Percentage']:.2f}%)\n"
-
             )
 
         f.write("\n")
@@ -552,9 +414,7 @@ with open(
     f.write("=" * 70 + "\n\n")
 
     f.write(
-
         agreement_percentage.to_string()
-
     )
 
     f.write("\n\n")
@@ -566,15 +426,14 @@ with open(
     f.write("=" * 70 + "\n\n")
 
     f.write(
-
         resolution_percentage.to_string()
-
     )
 
     f.write("\n")
-    
+
+
 # ==========================================================
-# TERMINAL
+# DISPLAY RESULTS
 # ==========================================================
 
 print()
@@ -587,7 +446,7 @@ print("=" * 70)
 
 print()
 
-for titulo, tabela in [
+for title, table in [
 
     ("Test TD Mentioned", summary_mentioned),
 
@@ -597,11 +456,11 @@ for titulo, tabela in [
 
 ]:
 
-    print(titulo)
+    print(title)
 
     print("-" * 40)
 
-    print(tabela)
+    print(table)
 
     print()
 
@@ -635,7 +494,7 @@ print()
 
 print("=" * 70)
 
-print("Arquivos gerados")
+print("GENERATED FILES")
 
 print("=" * 70)
 
@@ -677,7 +536,7 @@ print("rq4_results.txt")
 
 print()
 
-print(f"Pasta: {OUTPUT_DIR}")
+print(f"Directory: {OUTPUT_DIR}")
 
 print()
 

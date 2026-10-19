@@ -1,3 +1,4 @@
+
 import json
 import csv
 from pathlib import Path
@@ -6,150 +7,118 @@ RESULT_FILE = "data/llm_results.json"
 OUTPUT_DIR = Path("results")
 
 
-def garantir_pasta():
+# =====================================================
+# DIRECTORY AND DATA MANAGEMENT
+# =====================================================
+
+def ensure_output_directory():
     OUTPUT_DIR.mkdir(exist_ok=True)
 
 
-def carregar_resultados():
+def load_results():
     with open(RESULT_FILE, encoding="utf8") as f:
         return json.load(f)
 
 
-def salvar_csv(nome, cabecalho, linhas):
+def save_csv(filename, header, rows):
 
-    caminho = OUTPUT_DIR / nome
+    path = OUTPUT_DIR / filename
 
     with open(
-        caminho,
+        path,
         "w",
         newline="",
         encoding="utf8"
     ) as f:
 
         writer = csv.writer(f)
-        writer.writerow(cabecalho)
-        writer.writerows(linhas)
+        writer.writerow(header)
+        writer.writerows(rows)
 
 
 # =====================================================
-# RQ1
+# RQ1: MAINTENANCE OBJECTIVES
 # =====================================================
 
-def exportar_rq1(prs):
+def export_rq1(prs):
 
-    linhas = []
+    rows = []
 
     for pr in prs:
 
-        linhas.append([
-
+        rows.append([
             pr["repo"],
             pr["pr_number"],
             pr["primary_pr_objective"],
             pr["contains_test_td_discussion"]
-
         ])
 
-    salvar_csv(
-
+    save_csv(
         "RQ1_Objectives.csv",
-
         [
-
             "Repository",
             "PR",
             "PrimaryObjective",
             "ContainsTestTD"
-
         ],
-
-        linhas
-
+        rows
     )
 
 
 # =====================================================
-# RQ2
+# RQ2: CHARACTERISTICS OF SUGGESTIONS
 # =====================================================
 
-def exportar_rq2(prs):
+def export_rq2(prs):
 
-    linhas = []
+    rows = []
 
     for pr in prs:
 
         for thread in pr["threads"]:
 
-            linhas.append([
-
+            rows.append([
                 pr["repo"],
                 pr["pr_number"],
-
                 thread["thread_id"],
-
                 thread["scope"],
-
                 thread["test_td_discussion"],
-
                 thread["test_td_category"],
-
                 thread["contains_suggestion"],
-
                 thread["suggestion_type"],
-
                 thread["suggestion_author"],
-
                 thread["contains_code_suggestion"],
-
                 thread["agreement"],
-
                 thread["resolution"]
-
             ])
 
-    salvar_csv(
-
+    save_csv(
         "RQ2_Suggestions.csv",
-
         [
-
             "Repository",
-
             "PR",
-
             "Thread",
-
             "Scope",
-
             "TestTDDiscussion",
-
             "TestTDCategory",
-
             "ContainsSuggestion",
-
             "SuggestionType",
-
             "SuggestionAuthor",
-
             "ContainsCodeSuggestion",
-
             "Agreement",
-
             "Resolution"
-
         ],
-
-        linhas
-
+        rows
     )
-    
+
+
 # =====================================================
-# RQ3
+# RQ3: REASONS FOR REJECTION
 # =====================================================
 
-def exportar_rq3(prs):
+def export_rq3(prs):
 
-    linhas = []
+    rows = []
 
     for pr in prs:
 
@@ -158,316 +127,192 @@ def exportar_rq3(prs):
             if thread["agreement"] != "REJECTED":
                 continue
 
-            linhas.append([
-
+            rows.append([
                 pr["repo"],
-
                 pr["pr_number"],
-
                 thread["thread_id"],
-
                 thread["test_td_category"],
-
                 thread["suggestion_type"],
-
                 thread["suggestion_author"],
-
                 thread["rejection_reason"],
-
                 thread["justification"]
-
             ])
 
-    salvar_csv(
-
+    save_csv(
         "RQ3_RejectionReasons.csv",
-
         [
-
             "Repository",
-
             "PR",
-
             "Thread",
-
             "TestTDCategory",
-
             "SuggestionType",
-
             "SuggestionAuthor",
-
             "RejectionReason",
-
             "Justification"
-
         ],
-
-        linhas
-
+        rows
     )
 
 
 # =====================================================
-# RQ4
+# RQ4: COMPARISON WITH SONARQUBE
 # =====================================================
 
-def exportar_rq4(prs):
+def export_rq4(prs):
 
-    convergencia = []
-
-    divergencia = []
-
-    novidade = []
+    convergence = []
+    divergence = []
+    novelty = []
 
     for pr in prs:
 
         for thread in pr["threads"]:
 
-            regras = []
+            rules = []
 
-            for regra in thread["convergence"]["related_rules"]:
+            for rule in thread["convergence"]["related_rules"]:
+                rules.append(rule["rule"])
 
-                regras.append(regra["rule"])
-
-            convergencia.append([
-
+            convergence.append([
                 pr["repo"],
-
                 pr["pr_number"],
-
                 thread["thread_id"],
-
                 thread["convergence"]["classification"],
-
-                "; ".join(regras)
-
+                "; ".join(rules)
             ])
 
-            divergencia.append([
-
+            divergence.append([
                 pr["repo"],
-
                 pr["pr_number"],
-
                 thread["thread_id"],
-
                 thread["divergence"]["classification"],
-
                 thread["divergence"]["explanation"]
-
             ])
 
-            novidade.append([
-
+            novelty.append([
                 pr["repo"],
-
                 pr["pr_number"],
-
                 thread["thread_id"],
-
                 thread["novelty"]["classification"],
-
                 thread["novelty"]["explanation"]
-
             ])
 
-    salvar_csv(
-
+    save_csv(
         "RQ4_Convergence.csv",
-
         [
-
             "Repository",
-
             "PR",
-
             "Thread",
-
             "Classification",
-
             "RelatedRules"
-
         ],
-
-        convergencia
-
+        convergence
     )
 
-    salvar_csv(
-
+    save_csv(
         "RQ4_Divergence.csv",
-
         [
-
             "Repository",
-
             "PR",
-
             "Thread",
-
             "Classification",
-
             "Explanation"
-
         ],
-
-        divergencia
-
+        divergence
     )
 
-    salvar_csv(
-
+    save_csv(
         "RQ4_Novelty.csv",
-
         [
-
             "Repository",
-
             "PR",
-
             "Thread",
-
             "Classification",
-
             "Explanation"
-
         ],
-
-        novidade
-
+        novelty
     )
-    
+
+
 # =====================================================
-# ALL THREADS
+# ALL REVIEW THREADS
 # =====================================================
 
-def exportar_all_threads(prs):
+def export_all_threads(prs):
 
-    linhas = []
+    rows = []
 
     for pr in prs:
 
         for thread in pr["threads"]:
 
-            regras = []
+            rules = []
 
-            for regra in thread["convergence"]["related_rules"]:
+            for rule in thread["convergence"]["related_rules"]:
+                rules.append(rule["rule"])
 
-                regras.append(regra["rule"])
-
-            linhas.append([
-
+            rows.append([
                 pr["repo"],
-
                 pr["pr_number"],
-
                 pr["primary_pr_objective"],
-
                 pr["contains_test_td_discussion"],
-
                 thread["thread_id"],
-
                 thread["file"],
-
                 thread["line"],
-
                 thread["scope"],
-
                 thread["test_td_discussion"],
-
                 thread["test_td_category"],
-
                 thread["contains_suggestion"],
-
                 thread["suggestion_type"],
-
                 thread["suggestion_author"],
-
                 thread["contains_code_suggestion"],
-
                 thread["agreement"],
-
                 thread["resolution"],
-
                 thread["rejection_reason"],
-
                 thread["convergence"]["classification"],
-
                 thread["divergence"]["classification"],
-
                 thread["novelty"]["classification"],
-
-                "; ".join(regras),
-
+                "; ".join(rules),
                 thread["confidence"],
-
                 thread["confidence_reason"]
-
             ])
 
-    salvar_csv(
-
+    save_csv(
         "All_Threads.csv",
-
         [
-
             "Repository",
-
             "PR",
-
             "PrimaryObjective",
-
             "ContainsTestTD",
-
             "Thread",
-
             "File",
-
             "Line",
-
             "Scope",
-
             "TestTDDiscussion",
-
             "TestTDCategory",
-
             "ContainsSuggestion",
-
             "SuggestionType",
-
             "SuggestionAuthor",
-
             "ContainsCodeSuggestion",
-
             "Agreement",
-
             "Resolution",
-
             "RejectionReason",
-
             "Convergence",
-
             "Divergence",
-
             "Novelty",
-
             "RelatedRules",
-
             "Confidence",
-
             "ConfidenceReason"
-
         ],
-
-        linhas
-
+        rows
     )
-    
+
+
 # =====================================================
-# SUMMARY
+# SUMMARY REPORT
 # =====================================================
 
-def gerar_summary(prs):
+def generate_summary(prs):
 
     total_prs = len(prs)
 
@@ -476,7 +321,7 @@ def gerar_summary(prs):
         for pr in prs
     )
 
-    prs_com_td = sum(
+    prs_with_td = sum(
         1
         for pr in prs
         if pr["contains_test_td_discussion"] == "YES"
@@ -493,31 +338,29 @@ def gerar_summary(prs):
         f.write("=====================================\n\n")
 
         f.write(f"Total PRs: {total_prs}\n")
-        f.write(f"PRs containing Test Technical Debt discussions: {prs_com_td}\n")
+        f.write(
+            f"PRs containing Test Technical Debt discussions: "
+            f"{prs_with_td}\n"
+        )
         f.write(f"Total review threads analyzed: {total_threads}\n")
 
 
 # =====================================================
-# MAIN
+# MAIN EXECUTION
 # =====================================================
 
 def main():
 
-    garantir_pasta()
+    ensure_output_directory()
 
-    prs = carregar_resultados()
+    prs = load_results()
 
-    exportar_rq1(prs)
-
-    exportar_rq2(prs)
-
-    exportar_rq3(prs)
-
-    exportar_rq4(prs)
-
-    exportar_all_threads(prs)
-
-    gerar_summary(prs)
+    export_rq1(prs)
+    export_rq2(prs)
+    export_rq3(prs)
+    export_rq4(prs)
+    export_all_threads(prs)
+    generate_summary(prs)
 
     print()
     print("=" * 60)
@@ -525,18 +368,15 @@ def main():
     print("=" * 60)
 
     print(f"\nResults folder: {OUTPUT_DIR.resolve()}")
-
     print("\nGenerated files:")
 
-    arquivos = sorted(OUTPUT_DIR.glob("*"))
+    files = sorted(OUTPUT_DIR.glob("*"))
 
-    for arquivo in arquivos:
-
-        print(f" - {arquivo.name}")
+    for file in files:
+        print(f" - {file.name}")
 
     print()
 
 
 if __name__ == "__main__":
-
     main()

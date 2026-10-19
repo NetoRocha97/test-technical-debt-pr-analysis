@@ -1,66 +1,88 @@
+
 import json
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 # ==========================================================
-# ARQUIVOS
+# FILE PATHS
 # ==========================================================
 
-RESULT_FILE = "data/rejection_reasons.json"
+RESULT_FILE = "data/llm_results_final.json"
 
-OUTPUT_DIR = Path("results/rq3")
+OUTPUT_DIR = Path("results/rq1")
+
+CSV_FILE = OUTPUT_DIR / "rq1_summary.csv"
+
+XLSX_FILE = OUTPUT_DIR / "rq1_summary.xlsx"
+
+BAR_FILE = OUTPUT_DIR / "rq1_bar.png"
+
+PIE_FILE = OUTPUT_DIR / "rq1_pie.png"
+
+TXT_FILE = OUTPUT_DIR / "rq1_results.txt"
+
+PROJECT_FILE = OUTPUT_DIR / "rq1_by_project.xlsx"
+
+
+# ==========================================================
+# LOAD JSON RESULTS
+# ==========================================================
+
+def load_results():
+
+    with open(
+        RESULT_FILE,
+        encoding="utf8"
+    ) as f:
+
+        return json.load(f)
+
+
+# ==========================================================
+# CREATE OUTPUT DIRECTORY
+# ==========================================================
 
 OUTPUT_DIR.mkdir(
     parents=True,
     exist_ok=True
 )
 
-# ==========================================================
-# CARREGA RESULTADOS
-# ==========================================================
-
-with open(
-    RESULT_FILE,
-    encoding="utf8"
-) as f:
-
-    prs = json.load(f)
 
 # ==========================================================
-# DATAFRAME
+# PREPARE DATA
 # ==========================================================
 
-dados = []
+prs = load_results()
+
+data = []
 
 for pr in prs:
 
-    dados.append({
+    data.append({
 
-        "repo":
+        "repo": pr["repo"],
 
-            pr["repo"],
-
-        "rejection_reason":
-
-            pr["rejection_reason"]["value"]
+        "objective": pr["primary_pr_objective"]["value"]
 
     })
 
-df = pd.DataFrame(dados)
+df = pd.DataFrame(data)
+
 
 # ==========================================================
-# ESTATÍSTICAS
+# CALCULATE STATISTICS
 # ==========================================================
 
 summary = (
 
-    df["rejection_reason"]
+    df["objective"]
 
     .value_counts()
 
-    .rename_axis("Rejection Reason")
+    .rename_axis("Objective")
 
     .reset_index(name="Count")
 
@@ -76,11 +98,10 @@ summary["Percentage"] = (
 
 ).round(2)
 
-# ==========================================================
-# EXPORTA CSV
-# ==========================================================
 
-CSV_FILE = OUTPUT_DIR / "rejection_reason.csv"
+# ==========================================================
+# EXPORT CSV
+# ==========================================================
 
 summary.to_csv(
 
@@ -92,11 +113,10 @@ summary.to_csv(
 
 )
 
-# ==========================================================
-# EXPORTA EXCEL
-# ==========================================================
 
-XLSX_FILE = OUTPUT_DIR / "rejection_reason.xlsx"
+# ==========================================================
+# EXPORT EXCEL
+# ==========================================================
 
 summary.to_excel(
 
@@ -106,17 +126,16 @@ summary.to_excel(
 
 )
 
-# ==========================================================
-# POR PROJETO
-# ==========================================================
 
-PROJECT_FILE = OUTPUT_DIR / "rq3_by_project.xlsx"
+# ==========================================================
+# GENERATE PER-PROJECT SUMMARY
+# ==========================================================
 
 project_summary = pd.crosstab(
 
     df["repo"],
 
-    df["rejection_reason"]
+    df["objective"]
 
 )
 
@@ -126,17 +145,20 @@ project_summary.to_excel(
 
 )
 
+
 # ==========================================================
-# GRÁFICO DE BARRAS
+# GENERATE BAR CHART
 # ==========================================================
 
-BAR_FILE = OUTPUT_DIR / "rejection_reason_bar.png"
+plt.figure(
 
-plt.figure(figsize=(9,5))
+    figsize=(8, 5)
 
-bars = plt.bar(
+)
 
-    summary["Rejection Reason"],
+plt.bar(
+
+    summary["Objective"],
 
     summary["Count"]
 
@@ -144,13 +166,13 @@ bars = plt.bar(
 
 plt.title(
 
-    "RQ3 - Rejection Reasons"
+    "RQ1 - Primary PR Objective"
 
 )
 
 plt.xlabel(
 
-    "Rejection Reason"
+    "Objective"
 
 )
 
@@ -159,28 +181,6 @@ plt.ylabel(
     "Number of PRs"
 
 )
-
-plt.xticks(rotation=20)
-
-for bar in bars:
-
-    altura = bar.get_height()
-
-    plt.text(
-
-        bar.get_x() + bar.get_width()/2,
-
-        altura,
-
-        str(int(altura)),
-
-        ha="center",
-
-        va="bottom",
-
-        fontsize=9
-
-    )
 
 plt.tight_layout()
 
@@ -194,139 +194,98 @@ plt.savefig(
 
 plt.close()
 
+
 # ==========================================================
-# GRÁFICO DE PIZZA
+# GENERATE PIE CHART
 # ==========================================================
 
-PIE_FILE = OUTPUT_DIR / "rejection_reason_pie.png"
-
-plt.figure(
-
-    figsize=(7,7)
-
-)
+plt.figure(figsize=(7, 7))
 
 plt.pie(
-
     summary["Count"],
-
-    labels=summary["Rejection Reason"],
-
+    labels=summary["Objective"],
     autopct="%1.1f%%",
-
     startangle=90
-
 )
 
-plt.title(
-
-    "RQ3 - Rejection Reasons"
-
-)
+plt.title("RQ1 - Primary PR Objective")
 
 plt.tight_layout()
 
 plt.savefig(
-
     PIE_FILE,
-
     dpi=300
-
 )
 
 plt.close()
 
-# ==========================================================
-# RESUMO TXT
-# ==========================================================
 
-TXT_FILE = OUTPUT_DIR / "rq3_results.txt"
+# ==========================================================
+# GENERATE TEXT SUMMARY
+# ==========================================================
 
 total = summary["Count"].sum()
 
-mais_frequente = summary.iloc[0]
+most_frequent = summary.iloc[0]
 
 with open(
-
     TXT_FILE,
-
     "w",
-
     encoding="utf8"
-
 ) as f:
 
     f.write("=" * 60 + "\n")
-
-    f.write("RQ3\n")
-
+    f.write("RQ1\n")
     f.write("=" * 60 + "\n\n")
 
     f.write(
-
         "Research Question:\n"
-
     )
 
     f.write(
-
-        "What are the primary reasons that suggestions for resolving Technical Debt issues are rejected?\n\n"
-
+        "Which maintenance goals are commonly linked to PRs that discuss Technical Debt?\n\n"
     )
 
     f.write(
-
-        f"Total rejected PRs analysed: {total}\n\n"
-
+        f"Total PRs analyzed: {total}\n\n"
     )
 
     f.write(
-
-        "Distribution of rejection reasons:\n\n"
-
+        "Frequency of maintenance goals:\n\n"
     )
 
     for _, row in summary.iterrows():
 
         f.write(
-
-            f"{row['Rejection Reason']}: "
-
+            f"{row['Objective']}: "
             f"{row['Count']} "
-
             f"({row['Percentage']:.2f}%)\n"
-
         )
 
     f.write("\n")
 
     f.write(
-
-        "Most frequent rejection reason:\n"
-
+        "Most frequent maintenance goal:\n"
     )
 
     f.write(
-
-        f"{mais_frequente['Rejection Reason']} "
-
-        f"({mais_frequente['Count']} PRs - "
-
-        f"{mais_frequente['Percentage']:.2f}%)\n"
-
+        f"{most_frequent['Objective']} "
+        f"({most_frequent['Count']} PRs - "
+        f"{most_frequent['Percentage']:.2f}%)\n"
     )
-    
+
+
 # ==========================================================
-# TERMINAL
+# DISPLAY RESULTS
 # ==========================================================
 
 print()
 
-print("=" * 70)
+print("=" * 60)
 
-print("RQ3")
+print("RQ1")
 
-print("=" * 70)
+print("=" * 60)
 
 print()
 
@@ -334,31 +293,11 @@ print(summary)
 
 print()
 
-print(f"Total rejected PRs: {total}")
+print(f"Total PRs: {total}")
 
 print()
 
-print("Most frequent rejection reason:")
-
-print(
-
-    f"{mais_frequente['Rejection Reason']} "
-
-    f"({mais_frequente['Count']} PRs - "
-
-    f"{mais_frequente['Percentage']:.2f}%)"
-
-)
-
-print()
-
-print("=" * 70)
-
-print("Arquivos gerados")
-
-print("=" * 70)
-
-print()
+print("Generated files:")
 
 print(f"CSV   : {CSV_FILE}")
 
@@ -368,14 +307,10 @@ print(f"Bar   : {BAR_FILE}")
 
 print(f"Pie   : {PIE_FILE}")
 
-print(f"TXT   : {TXT_FILE}")
+print(f"Text  : {TXT_FILE}")
 
-print(f"Repo  : {PROJECT_FILE}")
-
-print()
-
-print(f"Pasta: {OUTPUT_DIR}")
+print(f"Project summary: {PROJECT_FILE}")
 
 print()
 
-print("=" * 70)
+print("=" * 60)

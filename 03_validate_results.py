@@ -1,3 +1,4 @@
+
 import json
 
 from schema import ANALYSIS_SCHEMA
@@ -5,17 +6,25 @@ from schema import ANALYSIS_SCHEMA
 RESULT_FILE = "data/llm_results.json"
 
 
-def validar_enum(valor, permitidos, campo):
+# =====================================================
+# VALIDATION HELPERS
+# =====================================================
 
-    if valor not in permitidos:
+def validate_enum(value, allowed_values, field):
+
+    if value not in allowed_values:
         raise ValueError(
-            f"{campo}: valor inválido -> {valor}"
+            f"{field}: invalid value -> {value}"
         )
 
 
-def validar_thread(thread):
+# =====================================================
+# THREAD VALIDATION
+# =====================================================
 
-    validar_enum(
+def validate_thread(thread):
+
+    validate_enum(
         thread["scope"],
         [
             "TEST",
@@ -26,7 +35,7 @@ def validar_thread(thread):
         "scope"
     )
 
-    validar_enum(
+    validate_enum(
         thread["test_td_discussion"],
         [
             "YES",
@@ -36,7 +45,7 @@ def validar_thread(thread):
         "test_td_discussion"
     )
 
-    validar_enum(
+    validate_enum(
         thread["test_td_category"],
         [
             "Assertion",
@@ -59,7 +68,7 @@ def validar_thread(thread):
         "test_td_category"
     )
 
-    validar_enum(
+    validate_enum(
         thread["contains_suggestion"],
         [
             "YES",
@@ -68,7 +77,7 @@ def validar_thread(thread):
         "contains_suggestion"
     )
 
-    validar_enum(
+    validate_enum(
         thread["suggestion_type"],
         [
             "EXPLICIT",
@@ -79,7 +88,7 @@ def validar_thread(thread):
         "suggestion_type"
     )
 
-    validar_enum(
+    validate_enum(
         thread["agreement"],
         [
             "AGREED",
@@ -91,7 +100,7 @@ def validar_thread(thread):
         "agreement"
     )
 
-    validar_enum(
+    validate_enum(
         thread["resolution"],
         [
             "FIXED",
@@ -104,26 +113,34 @@ def validar_thread(thread):
 
     if not (0 <= thread["confidence"] <= 1):
         raise ValueError(
-            f"confidence inválido: {thread['confidence']}"
+            f"Invalid confidence: {thread['confidence']}"
         )
 
 
-def validar_pr(pr):
+# =====================================================
+# PULL REQUEST VALIDATION
+# =====================================================
 
-    campos = ANALYSIS_SCHEMA["required"]
+def validate_pr(pr):
 
-    for campo in campos:
+    required_fields = ANALYSIS_SCHEMA["required"]
 
-        if campo not in pr:
+    for field in required_fields:
+
+        if field not in pr:
 
             raise ValueError(
-                f"Campo ausente: {campo}"
+                f"Missing field: {field}"
             )
 
     for thread in pr["threads"]:
 
-        validar_thread(thread)
+        validate_thread(thread)
 
+
+# =====================================================
+# MAIN EXECUTION
+# =====================================================
 
 def main():
 
@@ -132,23 +149,23 @@ def main():
         encoding="utf8"
     ) as f:
 
-        resultados = json.load(f)
+        results = json.load(f)
 
     print()
 
-    print(f"PRs analisados: {len(resultados)}")
+    print(f"Analyzed PRs: {len(results)}")
 
-    erros = 0
+    errors = 0
 
-    for pr in resultados:
+    for pr in results:
 
         try:
 
-            validar_pr(pr)
+            validate_pr(pr)
 
         except Exception as e:
 
-            erros += 1
+            errors += 1
 
             print()
 
@@ -160,13 +177,13 @@ def main():
 
     print()
 
-    if erros == 0:
+    if errors == 0:
 
-        print("Todos os resultados são válidos.")
+        print("All results are valid.")
 
     else:
 
-        print(f"Foram encontrados {erros} erro(s).")
+        print(f"{errors} error(s) found.")
 
 
 if __name__ == "__main__":

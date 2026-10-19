@@ -1,3 +1,4 @@
+
 import csv
 import json
 from pathlib import Path
@@ -9,7 +10,11 @@ OUTPUT_DIR = Path("results")
 OUTPUT_FILE = OUTPUT_DIR / "Manual_Validation.csv"
 
 
-def carregar_resultados():
+# =====================================================
+# RESULTS LOADING
+# =====================================================
+
+def load_results():
 
     with open(
         RESULT_FILE,
@@ -19,11 +24,15 @@ def carregar_resultados():
         return json.load(f)
 
 
+# =====================================================
+# MANUAL VALIDATION FILE GENERATION
+# =====================================================
+
 def main():
 
     OUTPUT_DIR.mkdir(exist_ok=True)
 
-    prs = carregar_resultados()
+    prs = load_results()
 
     with open(
         OUTPUT_FILE,
@@ -137,7 +146,7 @@ def main():
     print()
     print(f"File: {OUTPUT_FILE}")
     print()
-    print("Fill only the columns starting with 'Manual_'.")
+    print("Fill in only the columns starting with 'Manual_'.")
     print("The 'LLM_' columns must not be modified.")
 
 

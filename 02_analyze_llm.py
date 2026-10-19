@@ -1,3 +1,4 @@
+
 import json
 import time
 from pathlib import Path
@@ -9,36 +10,36 @@ from build_prompt import build_messages
 from schema import RESPONSE_FORMAT
 
 # =====================================================
-# CONFIGURAÇÃO
+# CONFIGURATION
 # =====================================================
 
 API_KEY = os.getenv("OPENAI_API_KEY")
-
 MODEL = "gpt-5.5"
 
 client = OpenAI(api_key=API_KEY)
 
 DATASET_FILE = "data/prs_dataset_remaining.json"
-#DATASET_FILE = "data/prs_dataset_validation.json"
+# DATASET_FILE = "data/prs_dataset_validation.json"
 
 RESULT_FILE = "data/llm_results_remaining.json"
-#RESULT_FILE = "data/llm_results_validation.json"
+# RESULT_FILE = "data/llm_results_validation.json"
+
 
 # =====================================================
-# LEITURA DOS ARQUIVOS
+# DATASET LOADING
 # =====================================================
 
-def carregar_dataset():
+def load_dataset():
 
     with open(DATASET_FILE, encoding="utf8") as f:
         return json.load(f)
 
 
 # =====================================================
-# RESULTADOS
+# RESULTS MANAGEMENT
 # =====================================================
 
-def carregar_resultados():
+def load_results():
 
     if Path(RESULT_FILE).exists():
 
@@ -48,7 +49,7 @@ def carregar_resultados():
     return []
 
 
-def salvar_resultados(resultados):
+def save_results(results):
 
     with open(
         RESULT_FILE,
@@ -57,7 +58,7 @@ def salvar_resultados(resultados):
     ) as f:
 
         json.dump(
-            resultados,
+            results,
             f,
             indent=2,
             ensure_ascii=False
@@ -65,20 +66,20 @@ def salvar_resultados(resultados):
 
 
 # =====================================================
-# CONVERSÃO DOS COMENTÁRIOS
+# REVIEW COMMENT FORMATTING
 # =====================================================
 
-def formatar_review_threads(pr):
+def format_review_threads(pr):
 
-    linhas = []
+    lines = []
 
     if len(pr["review_threads"]) == 0:
         return "None"
 
     for thread in pr["review_threads"]:
 
-        linhas.append("-" * 60)
-        linhas.append(
+        lines.append("-" * 60)
+        lines.append(
             f"Thread: {thread['thread_id']} | "
             f"File: {thread['path']} | "
             f"Line: {thread['line']}"
@@ -86,67 +87,59 @@ def formatar_review_threads(pr):
 
         for comment in thread["comments"]:
 
-            linhas.append(
+            lines.append(
                 f"{comment['author']} ({comment['created_at']}):"
             )
 
-            linhas.append(comment["body"])
+            lines.append(comment["body"])
+            lines.append("")
 
-            linhas.append("")
-
-    return "\n".join(linhas)
+    return "\n".join(lines)
 
 
 # =====================================================
-# ANÁLISE COM A LLM
+# LLM-BASED PULL REQUEST ANALYSIS
 # =====================================================
 
-def analisar_pr(pr):
+def analyze_pr(pr):
 
-    comentarios = formatar_review_threads(pr)
+    comments = format_review_threads(pr)
 
     if pr["issue_comments"]:
 
-        comentarios += "\n\n# Issue Comments\n\n"
+        comments += "\n\n# Issue Comments\n\n"
 
-        for c in pr["issue_comments"]:
+        for comment in pr["issue_comments"]:
 
-            comentarios += (
-                f"{c['author']} ({c['created_at']}):\n"
+            comments += (
+                f"{comment['author']} ({comment['created_at']}):\n"
             )
 
-            comentarios += c["body"]
+            comments += comment["body"]
+            comments += "\n\n"
 
-            comentarios += "\n\n"
+    pr_for_llm = pr.copy()
+    pr_for_llm["comments"] = comments
 
-    pr_llm = pr.copy()
+    messages = build_messages(pr_for_llm)
 
-    pr_llm["comments"] = comentarios
-
-    mensagens = build_messages(pr_llm)
-
-    for tentativa in range(3):
+    for attempt in range(3):
 
         try:
 
             response = client.responses.create(
-
                 model=MODEL,
-
-                input=mensagens,
-
+                input=messages,
                 text={
                     "format": RESPONSE_FORMAT
                 }
-
             )
 
             return json.loads(response.output_text)
 
         except Exception as e:
 
-            print(f"Tentativa {tentativa + 1}/3 falhou.")
-
+            print(f"Attempt {attempt + 1}/3 failed.")
             print(e)
 
             time.sleep(3)
@@ -155,63 +148,51 @@ def analisar_pr(pr):
 
 
 # =====================================================
-# MAIN
+# MAIN EXECUTION
 # =====================================================
 
 def main():
 
-    dataset = carregar_dataset()
+    dataset = load_dataset()
+    results = load_results()
 
-    resultados = carregar_resultados()
-
-    prs_processados = {
-
-        (r["repo"], r["pr_number"])
-
-        for r in resultados
-
+    processed_prs = {
+        (result["repo"], result["pr_number"])
+        for result in results
     }
 
     total = len(dataset)
 
-    print(f"Dataset: {total} PR(s)")
-    print(f"Resultados existentes: {len(resultados)}")
+    print(f"Dataset: {total} pull request(s)")
+    print(f"Existing results: {len(results)}")
 
     for i, pr in enumerate(dataset, start=1):
 
-        chave = (
-
+        key = (
             pr["repo"],
-
             pr["pr_number"]
-
         )
 
-        if chave in prs_processados:
-
+        if key in processed_prs:
             continue
 
         print(f"\n[{i}/{total}] {pr['repo']} #{pr['pr_number']}")
 
-        resultado = analisar_pr(pr)
+        result = analyze_pr(pr)
 
-        if resultado is None:
-
-            print("Falhou.")
-
+        if result is None:
+            print("Analysis failed.")
             continue
 
-        resultados.append(resultado)
+        results.append(result)
+        save_results(results)
 
-        salvar_resultados(resultados)
-
-        print("OK")
+        print("Analysis completed successfully.")
 
         time.sleep(1)
 
-    print("\nProcessamento finalizado.")
+    print("\nProcessing completed.")
 
 
 if __name__ == "__main__":
-
     main()

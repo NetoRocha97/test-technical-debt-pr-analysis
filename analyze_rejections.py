@@ -1,3 +1,4 @@
+
 import json
 import time
 from pathlib import Path
@@ -8,8 +9,9 @@ from openai import OpenAI
 from prompt_rejection import build_messages
 from schema_rejection import RESPONSE_FORMAT
 
+
 # =====================================================
-# CONFIGURAÇÃO
+# CONFIGURATION
 # =====================================================
 
 API_KEY = os.getenv("OPENAI_API_KEY")
@@ -22,61 +24,62 @@ DATASET_FILE = "data/prs_rejected.json"
 
 RESULT_FILE = "data/rejection_reasons.json"
 
+
 # =====================================================
-# LEITURA DOS ARQUIVOS
+# LOAD DATASET
 # =====================================================
 
-def carregar_dataset():
+def load_dataset():
 
     with open(
         DATASET_FILE,
         encoding="utf8"
-    ) as f:
+    ) as file:
 
-        return json.load(f)
+        return json.load(file)
 
 
 # =====================================================
-# RESULTADOS
+# LOAD AND SAVE RESULTS
 # =====================================================
 
-def carregar_resultados():
+def load_results():
 
     if Path(RESULT_FILE).exists():
 
         with open(
             RESULT_FILE,
             encoding="utf8"
-        ) as f:
+        ) as file:
 
-            return json.load(f)
+            return json.load(file)
 
     return []
 
 
-def salvar_resultados(resultados):
+def save_results(results):
 
     with open(
         RESULT_FILE,
         "w",
         encoding="utf8"
-    ) as f:
+    ) as file:
 
         json.dump(
-            resultados,
-            f,
+            results,
+            file,
             indent=2,
             ensure_ascii=False
         )
 
 
 # =====================================================
-# CONVERTE COMENTÁRIOS
+# FORMAT COMMENTS
 # =====================================================
 
-def formatar_review_threads(pr):
+def format_review_threads(pr):
 
-    linhas = []
+    lines = []
 
     if len(pr["review_threads"]) == 0:
 
@@ -84,59 +87,50 @@ def formatar_review_threads(pr):
 
     for thread in pr["review_threads"]:
 
-        linhas.append("-" * 60)
+        lines.append("-" * 60)
 
-        linhas.append(
-
+        lines.append(
             f"Thread: {thread['thread_id']} | "
-
             f"File: {thread['path']} | "
-
             f"Line: {thread['line']}"
-
         )
 
         for comment in thread["comments"]:
 
-            linhas.append(
-
+            lines.append(
                 f"{comment['author']} ({comment['created_at']}):"
-
             )
 
-            linhas.append(
-
+            lines.append(
                 comment["body"]
-
             )
 
-            linhas.append("")
+            lines.append("")
 
-    return "\n".join(linhas)
+    return "\n".join(lines)
+
 
 # =====================================================
-# ANÁLISE COM A LLM
+# LLM ANALYSIS
 # =====================================================
 
-def analisar_pr(pr):
+def analyze_pr(pr):
 
-    comentarios = formatar_review_threads(pr)
+    comments = format_review_threads(pr)
 
     if pr["issue_comments"]:
 
-        comentarios += "\n\n# Issue Comments\n\n"
+        comments += "\n\n# Issue Comments\n\n"
 
-        for c in pr["issue_comments"]:
+        for comment in pr["issue_comments"]:
 
-            comentarios += (
-
-                f"{c['author']} ({c['created_at']}):\n"
-
+            comments += (
+                f"{comment['author']} ({comment['created_at']}):\n"
             )
 
-            comentarios += c["body"]
+            comments += comment["body"]
 
-            comentarios += "\n\n"
+            comments += "\n\n"
 
     pr_llm = {
 
@@ -148,13 +142,13 @@ def analisar_pr(pr):
 
         "description": pr["description"],
 
-        "comments": comentarios
+        "comments": comments
 
     }
 
-    mensagens = build_messages(pr_llm)
+    messages = build_messages(pr_llm)
 
-    for tentativa in range(3):
+    for attempt in range(3):
 
         try:
 
@@ -162,35 +156,30 @@ def analisar_pr(pr):
 
                 model=MODEL,
 
-                input=mensagens,
+                input=messages,
 
                 text={
-
                     "format": RESPONSE_FORMAT
-
                 }
 
             )
 
             return json.loads(
-
                 response.output_text
-
             )
 
-        except Exception as e:
+        except Exception as error:
 
             print(
-
-                f"Tentativa {tentativa + 1}/3 falhou."
-
+                f"Attempt {attempt + 1}/3 failed."
             )
 
-            print(e)
+            print(error)
 
             time.sleep(3)
 
     return None
+
 
 # =====================================================
 # MAIN
@@ -198,66 +187,55 @@ def analisar_pr(pr):
 
 def main():
 
-    dataset = carregar_dataset()
+    dataset = load_dataset()
 
-    resultados = carregar_resultados()
+    results = load_results()
 
-    prs_processados = {
-
-        (r["repo"], r["pr_number"])
-
-        for r in resultados
-
+    processed_prs = {
+        (result["repo"], result["pr_number"])
+        for result in results
     }
 
     total = len(dataset)
 
     print(f"Dataset: {total} PR(s)")
 
-    print(f"Resultados existentes: {len(resultados)}")
+    print(f"Existing results: {len(results)}")
 
     for i, pr in enumerate(dataset, start=1):
 
-        chave = (
-
+        pr_key = (
             pr["repo"],
-
             pr["pr_number"]
-
         )
 
-        if chave in prs_processados:
+        if pr_key in processed_prs:
 
             continue
 
         print(
-
             f"\n[{i}/{total}] "
-
             f"{pr['repo']} "
-
             f"#{pr['pr_number']}"
-
         )
 
-        resultado = analisar_pr(pr)
+        result = analyze_pr(pr)
 
-        if resultado is None:
+        if result is None:
 
-            print("Falhou.")
+            print("Failed.")
 
             continue
 
-        resultados.append(resultado)
+        results.append(result)
 
-        salvar_resultados(resultados)
+        save_results(results)
+
+        processed_prs.add(pr_key)
 
         print(
-
-            f"Motivo: "
-
-            f"{resultado['rejection_reason']['value']}"
-
+            f"Reason: "
+            f"{result['rejection_reason']['value']}"
         )
 
         print("OK")
@@ -268,13 +246,13 @@ def main():
 
     print("=" * 60)
 
-    print("PROCESSAMENTO FINALIZADO")
+    print("PROCESSING COMPLETED")
 
     print("=" * 60)
 
     print()
 
-    print(f"Resultados salvos em:")
+    print("Results saved to:")
 
     print(RESULT_FILE)
 

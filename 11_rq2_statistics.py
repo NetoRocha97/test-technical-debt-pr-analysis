@@ -1,3 +1,4 @@
+
 import json
 from pathlib import Path
 
@@ -6,7 +7,7 @@ import pandas as pd
 
 
 # ==========================================================
-# ARQUIVOS
+# FILE PATHS
 # ==========================================================
 
 RESULT_FILE = "data/llm_results_final.json"
@@ -20,7 +21,7 @@ OUTPUT_DIR.mkdir(
 
 
 # ==========================================================
-# CARREGA RESULTADOS
+# LOAD RESULTS
 # ==========================================================
 
 with open(
@@ -32,53 +33,45 @@ with open(
 
 
 # ==========================================================
-# CONVERTE PARA DATAFRAME
+# CONVERT TO DATAFRAME
 # ==========================================================
 
-dados = []
+data = []
 
 for pr in prs:
 
-    dados.append({
+    data.append({
 
-        "repo":
+        "repo": pr["repo"],
 
-            pr["repo"],
+        "suggestion_type": pr["suggestion_type"]["value"],
 
-        "suggestion_type":
+        "agreement": pr["agreement"]["value"],
 
-            pr["suggestion_type"]["value"],
-
-        "agreement":
-
-            pr["agreement"]["value"],
-
-        "resolution":
-
-            pr["resolution"]["value"]
+        "resolution": pr["resolution"]["value"]
 
     })
 
-df = pd.DataFrame(dados)
+df = pd.DataFrame(data)
 
 
 # ==========================================================
-# FUNÇÃO PARA GERAR ESTATÍSTICAS
+# GENERATE STATISTICS
 # ==========================================================
 
-def gerar_estatisticas(
+def generate_statistics(
     dataframe,
-    coluna,
-    nome_saida
+    column,
+    output_name
 ):
 
     summary = (
 
-        dataframe[coluna]
+        dataframe[column]
 
         .value_counts()
 
-        .rename_axis(coluna)
+        .rename_axis(column)
 
         .reset_index(name="Count")
 
@@ -94,81 +87,55 @@ def gerar_estatisticas(
 
     ).round(2)
 
-    csv_file = OUTPUT_DIR / f"{nome_saida}.csv"
+    csv_file = OUTPUT_DIR / f"{output_name}.csv"
 
-    xlsx_file = OUTPUT_DIR / f"{nome_saida}.xlsx"
+    xlsx_file = OUTPUT_DIR / f"{output_name}.xlsx"
 
-    bar_file = OUTPUT_DIR / f"{nome_saida}_bar.png"
+    bar_file = OUTPUT_DIR / f"{output_name}_bar.png"
 
-    pie_file = OUTPUT_DIR / f"{nome_saida}_pie.png"
+    pie_file = OUTPUT_DIR / f"{output_name}_pie.png"
 
     summary.to_csv(
-
         csv_file,
-
         index=False,
-
         encoding="utf8"
-
     )
 
     summary.to_excel(
-
         xlsx_file,
-
         index=False
-
     )
 
     return (
-
         summary,
-
         csv_file,
-
         xlsx_file,
-
         bar_file,
-
         pie_file
-
     )
-    
+
+
 # ==========================================================
-# GRÁFICOS
+# GENERATE CHARTS
 # ==========================================================
 
-def gerar_graficos(
-
+def generate_charts(
     summary,
-
-    titulo,
-
+    title,
     bar_file,
-
     pie_file
-
 ):
 
-    # -------------------------
-    # BARRAS
-    # -------------------------
-
     plt.figure(
-
         figsize=(9, 5)
-
     )
 
     bars = plt.bar(
-
         summary.iloc[:, 0],
-
         summary["Count"]
-
     )
 
-    plt.title(titulo)
+    plt.title(title)
 
     plt.xlabel("Category")
 
@@ -178,177 +145,122 @@ def gerar_graficos(
 
     for bar in bars:
 
-        altura = bar.get_height()
+        height = bar.get_height()
 
         plt.text(
-
-            bar.get_x() + bar.get_width()/2,
-
-            altura,
-
-            f"{int(altura)}",
-
+            bar.get_x() + bar.get_width() / 2,
+            height,
+            f"{int(height)}",
             ha="center",
-
             va="bottom",
-
             fontsize=9
-
         )
 
     plt.tight_layout()
 
     plt.savefig(
-
         bar_file,
-
         dpi=300
-
     )
 
     plt.close()
 
-    # -------------------------
-    # PIZZA
-    # -------------------------
-
     plt.figure(
-
         figsize=(7, 7)
-
     )
 
     plt.pie(
-
         summary["Count"],
-
         labels=summary.iloc[:, 0],
-
         autopct="%1.1f%%",
-
         startangle=90
-
     )
 
-    plt.title(titulo)
+    plt.title(title)
 
     plt.tight_layout()
 
     plt.savefig(
-
         pie_file,
-
         dpi=300
-
     )
 
     plt.close()
 
 
 # ==========================================================
-# ESTATÍSTICAS POR PROJETO
+# GENERATE PER-PROJECT STATISTICS
 # ==========================================================
 
-project_writer = pd.ExcelWriter(
-
+with pd.ExcelWriter(
     OUTPUT_DIR / "rq2_by_project.xlsx",
-
     engine="openpyxl"
+) as project_writer:
 
-)
+    for column in [
+        "suggestion_type",
+        "agreement",
+        "resolution"
+    ]:
 
-for coluna in [
+        table = pd.crosstab(
+            df["repo"],
+            df[column]
+        )
 
-    "suggestion_type",
-
-    "agreement",
-
-    "resolution"
-
-]:
-
-    tabela = pd.crosstab(
-
-        df["repo"],
-
-        df[coluna]
-
-    )
-
-    tabela.to_excel(
-
-        project_writer,
-
-        sheet_name=coluna[:31]
-
-    )
-
-project_writer.close()
+        table.to_excel(
+            project_writer,
+            sheet_name=column[:31]
+        )
 
 
 # ==========================================================
-# EXECUTA
+# RUN STATISTICAL ANALYSIS
 # ==========================================================
 
-resultado_suggestion = gerar_estatisticas(
-
+suggestion_result = generate_statistics(
     df,
-
     "suggestion_type",
-
     "suggestion_type"
-
 )
 
-resultado_agreement = gerar_estatisticas(
-
+agreement_result = generate_statistics(
     df,
-
     "agreement",
-
     "agreement"
-
 )
 
-resultado_resolution = gerar_estatisticas(
-
+resolution_result = generate_statistics(
     df,
-
     "resolution",
-
     "resolution"
-
 )
 
+
 # ==========================================================
-# GERA GRÁFICOS
+# GENERATE CHARTS
 # ==========================================================
 
-for resultado, titulo in [
+for result, title in [
 
-    (resultado_suggestion, "RQ2 - Suggestion Type"),
+    (suggestion_result, "RQ2 - Suggestion Type"),
 
-    (resultado_agreement, "RQ2 - Agreement"),
+    (agreement_result, "RQ2 - Agreement"),
 
-    (resultado_resolution, "RQ2 - Resolution")
+    (resolution_result, "RQ2 - Resolution")
 
 ]:
 
-    gerar_graficos(
-
-        resultado[0],
-
-        titulo,
-
-        resultado[3],
-
-        resultado[4]
-
+    generate_charts(
+        result[0],
+        title,
+        result[3],
+        result[4]
     )
 
 
 # ==========================================================
-# GERA RESUMO TXT
+# GENERATE TEXT SUMMARY
 # ==========================================================
 
 TXT_FILE = OUTPUT_DIR / "rq2_results.txt"
@@ -371,38 +283,34 @@ with open(
         "What are the key characteristics of suggestions for addressing Technical Debt issues?\n\n"
     )
 
-    for nome, resultado in [
+    for name, result in [
 
-        ("Suggestion Type", resultado_suggestion),
+        ("Suggestion Type", suggestion_result),
 
-        ("Agreement", resultado_agreement),
+        ("Agreement", agreement_result),
 
-        ("Resolution", resultado_resolution)
+        ("Resolution", resolution_result)
 
     ]:
 
-        tabela = resultado[0]
+        table = result[0]
 
-        f.write(f"{nome}\n")
+        f.write(f"{name}\n")
         f.write("-" * 40 + "\n")
 
-        for _, row in tabela.iterrows():
+        for _, row in table.iterrows():
 
             f.write(
-
                 f"{row.iloc[0]}: "
-
                 f"{row['Count']} "
-
                 f"({row['Percentage']:.2f}%)\n"
-
             )
 
         f.write("\n")
 
 
 # ==========================================================
-# TERMINAL
+# DISPLAY RESULTS
 # ==========================================================
 
 print()
@@ -413,51 +321,47 @@ print("RQ2")
 
 print("=" * 70)
 
-for nome, resultado in [
+for name, result in [
 
-    ("Suggestion Type", resultado_suggestion),
+    ("Suggestion Type", suggestion_result),
 
-    ("Agreement", resultado_agreement),
+    ("Agreement", agreement_result),
 
-    ("Resolution", resultado_resolution)
+    ("Resolution", resolution_result)
 
 ]:
 
     print()
 
-    print(nome)
+    print(name)
 
     print("-" * 40)
 
-    print(resultado[0])
+    print(result[0])
 
 print()
 
 print("=" * 70)
 
-print("Arquivos gerados")
+print("GENERATED FILES")
 
 print("=" * 70)
 
-for nome in [
-
+for name in [
     "suggestion_type",
-
     "agreement",
-
     "resolution"
-
 ]:
 
     print()
 
-    print(f"{nome}.csv")
+    print(f"{name}.csv")
 
-    print(f"{nome}.xlsx")
+    print(f"{name}.xlsx")
 
-    print(f"{nome}_bar.png")
+    print(f"{name}_bar.png")
 
-    print(f"{nome}_pie.png")
+    print(f"{name}_pie.png")
 
 print()
 
@@ -467,7 +371,7 @@ print("rq2_by_project.xlsx")
 
 print()
 
-print(f"Pasta: {OUTPUT_DIR}")
+print(f"Directory: {OUTPUT_DIR}")
 
 print()
 

@@ -1,3 +1,4 @@
+
 import json
 import pandas as pd
 
@@ -12,7 +13,7 @@ from openpyxl.styles import (
 from openpyxl.utils import get_column_letter
 
 # =====================================================
-# ARQUIVOS
+# FILE PATHS
 # =====================================================
 
 MANUAL_FILE = "data/manual_validation.xlsx"
@@ -22,23 +23,19 @@ LLM_FILE = "data/llm_results_validation.json"
 OUTPUT_FILE = "results/validação/manual_validation_with_llm.xlsx"
 
 # =====================================================
-# CARREGA DADOS
+# LOAD DATA
 # =====================================================
 
-print("Lendo planilha manual...")
+print("Loading manual spreadsheet...")
 
 manual = pd.read_excel(MANUAL_FILE)
 
-# Remove espaços antes/depois do nome das colunas
 manual.columns = manual.columns.str.strip()
 
-# Remove colunas totalmente vazias
 manual = manual.loc[:, manual.columns != ""]
 
-# Remove linhas vazias
 manual = manual.dropna(subset=["repo", "pr_number"])
 
-# Remove cabeçalhos repetidos
 manual = manual[
     manual["repo"].astype(str).str.lower() != "repo"
 ]
@@ -47,7 +44,6 @@ manual = manual[
     manual["pr_number"].astype(str).str.lower() != "pr_number"
 ]
 
-# Remove espaços
 manual["pr_number"] = (
     manual["pr_number"]
     .astype(str)
@@ -64,10 +60,9 @@ manual = manual.dropna(subset=["repo", "pr_number"])
 
 manual["pr_number"] = manual["pr_number"].astype(int)
 
-# Remove linhas vazias
 manual = manual.dropna(subset=["repo", "pr_number"])
 
-print("Lendo resultados da LLM...")
+print("Loading LLM results...")
 
 with open(
     LLM_FILE,
@@ -77,50 +72,47 @@ with open(
     llm = json.load(f)
 
 # =====================================================
-# INDEXAÇÃO DOS RESULTADOS DA LLM
+# INDEX LLM RESULTS
 # =====================================================
 
 llm_dict = {}
 
 for pr in llm:
 
-    chave = (
-
+    key = (
         pr["repo"],
-
         int(pr["pr_number"])
-
     )
 
-    llm_dict[chave] = {
+    llm_dict[key] = {
 
-        "objetivo_pr":
+        "pr_objective":
             pr["primary_pr_objective"]["value"],
 
-        "tipo_sugestao":
+        "suggestion_type":
             pr["suggestion_type"]["value"],
 
-        "acordo":
+        "agreement":
             pr["agreement"]["value"],
 
-        "resolucao":
+        "resolution":
             pr["resolution"]["value"],
 
-        "dt_teste_mencionada":
+        "test_td_mentioned":
             pr["test_td_mentioned"]["value"],
 
-        "forma_dt_menc":
+        "mention_type":
             pr["mention_type"]["value"],
 
-        "tipo_dt_teste":
+        "test_td_type":
             pr["test_td_type"]["value"]
 
     }
 
-print(f"Resultados indexados: {len(llm_dict)}")
+print(f"Indexed results: {len(llm_dict)}")
 
 # =====================================================
-# CRIA O EXCEL
+# CREATE EXCEL WORKBOOK
 # =====================================================
 
 wb = Workbook()
@@ -130,7 +122,7 @@ ws = wb.active
 ws.title = "Validation"
 
 # =====================================================
-# ESTILOS
+# STYLES
 # =====================================================
 
 BLUE = PatternFill(
@@ -154,94 +146,68 @@ ORANGE = PatternFill(
 )
 
 BORDER = Border(
-
     left=Side(style="thin"),
-
     right=Side(style="thin"),
-
     top=Side(style="thin"),
-
     bottom=Side(style="thin")
-
 )
 
 BOLD = Font(
-
     bold=True
-
 )
 
 CENTER = Alignment(
-
     horizontal="center",
-
     vertical="center"
-
 )
 
 # =====================================================
-# CABEÇALHO PRINCIPAL
+# MAIN HEADER
 # =====================================================
 
-grupos = [
+groups = [
 
-    ("A1:B1",
-     "Identification",
-     BLUE),
+    ("A1:B1", "Identification", BLUE),
 
-    ("C1:E1",
-     "RQ1 - Primary PR Objective",
-     GREEN),
+    ("C1:E1", "RQ1 - Primary PR Objective", GREEN),
 
-    ("F1:H1",
-     "RQ2 - Suggestion Type",
-     YELLOW),
+    ("F1:H1", "RQ2 - Suggestion Type", YELLOW),
 
-    ("I1:K1",
-     "RQ2 - Agreement",
-     YELLOW),
+    ("I1:K1", "RQ2 - Agreement", YELLOW),
 
-    ("L1:N1",
-     "RQ2 - Resolution",
-     YELLOW),
+    ("L1:N1", "RQ2 - Resolution", YELLOW),
 
-    ("O1:Q1",
-     "RQ4 - Test TD Mention",
-     ORANGE),
+    ("O1:Q1", "RQ4 - Test TD Mention", ORANGE),
 
-    ("R1:T1",
-     "RQ4 - Mention Type",
-     ORANGE),
+    ("R1:T1", "RQ4 - Mention Type", ORANGE),
 
-    ("U1:W1",
-     "RQ4 - Test TD Type",
-     ORANGE)
+    ("U1:W1", "RQ4 - Test TD Type", ORANGE)
 
 ]
 
-for intervalo, texto, cor in grupos:
+for cell_range, title, color in groups:
 
-    ws.merge_cells(intervalo)
+    ws.merge_cells(cell_range)
 
-    celula = ws[
-        intervalo.split(":")[0]
+    cell = ws[
+        cell_range.split(":")[0]
     ]
 
-    celula.value = texto
+    cell.value = title
 
-    celula.fill = cor
+    cell.fill = color
 
-    celula.font = BOLD
+    cell.font = BOLD
 
-    celula.alignment = CENTER
+    cell.alignment = CENTER
 
-    celula.border = BORDER
-    
+    cell.border = BORDER
+
 # =====================================================
-# SEGUNDA LINHA DO CABEÇALHO
+# SECOND HEADER ROW
 # =====================================================
 
-cabecalho = [
+headers = [
 
     "Repository",
     "PR",
@@ -276,7 +242,7 @@ cabecalho = [
 
 ]
 
-cores = [
+header_colors = [
 
     BLUE,
     BLUE,
@@ -311,118 +277,116 @@ cores = [
 
 ]
 
-for coluna, texto in enumerate(cabecalho, start=1):
+for column, title in enumerate(headers, start=1):
 
-    cell = ws.cell(row=2, column=coluna)
+    cell = ws.cell(row=2, column=column)
 
-    cell.value = texto
+    cell.value = title
 
     cell.font = BOLD
 
     cell.alignment = CENTER
 
-    cell.fill = cores[coluna - 1]
+    cell.fill = header_colors[column - 1]
 
     cell.border = BORDER
 
 # =====================================================
-# DADOS
+# DATA ROWS
 # =====================================================
 
-linha = 3
+row_number = 3
 
 for _, row in manual.iterrows():
 
     repo = row["repo"]
+
     pr_number = row["pr_number"]
 
-    chave = (
+    key = (
         repo,
         pr_number
     )
 
-    llm_data = llm_dict.get(chave, {})
+    llm_data = llm_dict.get(key, {})
 
-    valores = [
+    values = [
 
         repo,
         pr_number,
 
         row["objetivo_pr"],
-        llm_data.get("objetivo_pr", ""),
+        llm_data.get("pr_objective", ""),
         "",
 
         row["tipo_sugestao"],
-        llm_data.get("tipo_sugestao", ""),
+        llm_data.get("suggestion_type", ""),
         "",
 
         row["acordo"],
-        llm_data.get("acordo", ""),
+        llm_data.get("agreement", ""),
         "",
 
         row["resolucao"],
-        llm_data.get("resolucao", ""),
+        llm_data.get("resolution", ""),
         "",
 
         row["dt_teste_mencionada"],
-        llm_data.get("dt_teste_mencionada", ""),
+        llm_data.get("test_td_mentioned", ""),
         "",
 
         row["forma_dt_menc"],
-        llm_data.get("forma_dt_menc", ""),
+        llm_data.get("mention_type", ""),
         "",
 
         row["tipo_dt_teste"],
-        llm_data.get("tipo_dt_teste", ""),
+        llm_data.get("test_td_type", ""),
         ""
 
     ]
 
-    for coluna, valor in enumerate(valores, start=1):
+    for column, value in enumerate(values, start=1):
 
         cell = ws.cell(
-            row=linha,
-            column=coluna
+            row=row_number,
+            column=column
         )
 
-        cell.value = valor
+        cell.value = value
 
         cell.alignment = CENTER
 
         cell.border = BORDER
 
-    linha += 1
+    row_number += 1
 
 # =====================================================
-# AJUSTE AUTOMÁTICO DAS COLUNAS
+# AUTOMATIC COLUMN WIDTH ADJUSTMENT
 # =====================================================
 
-for coluna in ws.columns:
+for column_cells in ws.columns:
 
-    letra = get_column_letter(
-        coluna[0].column
+    column_letter = get_column_letter(
+        column_cells[0].column
     )
 
-    tamanho = 0
+    max_length = 0
 
-    for cell in coluna:
+    for cell in column_cells:
 
         if cell.value is not None:
 
-            tamanho = max(
-                tamanho,
+            max_length = max(
+                max_length,
                 len(str(cell.value))
             )
 
-    ws.column_dimensions[letra].width = min(
-        tamanho + 3,
+    ws.column_dimensions[column_letter].width = min(
+        max_length + 3,
         35
     )
 
-# Colunas Match menores
-
-for coluna in [
-
+for column in [
     "E",
     "H",
     "K",
@@ -430,13 +394,12 @@ for coluna in [
     "Q",
     "T",
     "W"
-
 ]:
 
-    ws.column_dimensions[coluna].width = 10
+    ws.column_dimensions[column].width = 10
 
 # =====================================================
-# EXCEL
+# WORKSHEET CONFIGURATION
 # =====================================================
 
 ws.freeze_panes = "A3"
@@ -444,7 +407,7 @@ ws.freeze_panes = "A3"
 ws.auto_filter.ref = f"A2:W{ws.max_row}"
 
 # =====================================================
-# SALVA
+# SAVE WORKBOOK
 # =====================================================
 
 wb.save(OUTPUT_FILE)
@@ -453,10 +416,10 @@ print()
 
 print("=" * 60)
 
-print("PLANILHA GERADA COM SUCESSO")
+print("SPREADSHEET GENERATED SUCCESSFULLY")
 
 print("=" * 60)
 
 print()
 
-print(f"Arquivo salvo em: {OUTPUT_FILE}")
+print(f"File saved to: {OUTPUT_FILE}")

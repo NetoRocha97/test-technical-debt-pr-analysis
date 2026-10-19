@@ -1,3 +1,4 @@
+
 import json
 import time
 import urllib.request
@@ -7,13 +8,12 @@ from collections import defaultdict
 import pandas as pd
 
 # =====================================================
-# CONFIGURAÇÃO
+# CONFIGURATION
 # =====================================================
 
 OWNER = "apache"
 
 TOKEN = os.getenv("GITHUB_TOKEN")
-
 
 HEADERS = {
     "Accept": "application/vnd.github+json"
@@ -27,7 +27,7 @@ ISSUES_FILE = "data/filtered_test_processed_issues.csv"
 OUTPUT_FILE = "data/prs_dataset.json"
 
 # =====================================================
-# FUNÇÕES AUXILIARES
+# HELPER FUNCTIONS
 # =====================================================
 
 
@@ -45,7 +45,7 @@ def github_get(url):
         )
 
 
-def carregar_dados():
+def load_data():
 
     prs = pd.read_csv(PRS_FILE)
 
@@ -54,7 +54,7 @@ def carregar_dados():
     return prs, issues
 
 
-def coletar_pr(repo, pr_number):
+def fetch_pr(repo, pr_number):
 
     url = (
         f"https://api.github.com/repos/"
@@ -64,7 +64,7 @@ def coletar_pr(repo, pr_number):
     return github_get(url)
 
 
-def coletar_review_comments(repo, pr_number):
+def fetch_review_comments(repo, pr_number):
 
     url = (
         f"https://api.github.com/repos/"
@@ -74,7 +74,7 @@ def coletar_review_comments(repo, pr_number):
     return github_get(url)
 
 
-def coletar_issue_comments(repo, pr_number):
+def fetch_issue_comments(repo, pr_number):
 
     url = (
         f"https://api.github.com/repos/"
@@ -83,11 +83,12 @@ def coletar_issue_comments(repo, pr_number):
 
     return github_get(url)
 
+
 # =====================================================
-# RECONSTRUÇÃO DAS REVIEW THREADS
+# REVIEW THREAD RECONSTRUCTION
 # =====================================================
 
-def construir_threads(review_comments):
+def build_threads(review_comments):
 
     comentarios = {}
 
@@ -105,7 +106,7 @@ def construir_threads(review_comments):
 
     for c in review_comments:
 
-        # Apenas comentários raiz iniciam uma thread
+        # Only root comments start a thread
         if c.get("in_reply_to_id") is not None:
             continue
 
@@ -164,7 +165,7 @@ def construir_threads(review_comments):
 # SONARQUBE
 # =====================================================
 
-def coletar_sonar(repo, pr_number, issues):
+def fetch_sonar_issues(repo, pr_number, issues):
 
     sonar = issues[
         (issues["repo"] == repo)
@@ -191,13 +192,14 @@ def coletar_sonar(repo, pr_number, issues):
 
     return regras
 
+
 # =====================================================
 # MAIN
 # =====================================================
 
 def main():
 
-    prs, issues = carregar_dados()
+    prs, issues = load_data()
 
     dataset = []
 
@@ -213,21 +215,21 @@ def main():
         try:
 
             # -----------------------------
-            # PR
+            # Pull request
             # -----------------------------
 
-            pr_data = coletar_pr(repo, pr_number)
+            pr_data = fetch_pr(repo, pr_number)
 
             # -----------------------------
             # Review comments
             # -----------------------------
 
-            review_comments = coletar_review_comments(
+            review_comments = fetch_review_comments(
                 repo,
                 pr_number
             )
 
-            review_threads = construir_threads(
+            review_threads = build_threads(
                 review_comments
             )
 
@@ -235,7 +237,7 @@ def main():
             # Issue comments
             # -----------------------------
 
-            issue_comments_raw = coletar_issue_comments(
+            issue_comments_raw = fetch_issue_comments(
                 repo,
                 pr_number
             )
@@ -259,17 +261,17 @@ def main():
                 })
 
             # -----------------------------
-            # Sonar
+            # SonarQube
             # -----------------------------
 
-            sonar_rules = coletar_sonar(
+            sonar_rules = fetch_sonar_issues(
                 repo,
                 pr_number,
                 issues
             )
 
             # -----------------------------
-            # Dataset
+            # Dataset entry
             # -----------------------------
 
             dataset.append({
@@ -302,15 +304,15 @@ def main():
 
             })
 
-            # Evita atingir o rate limit
+            # Avoid hitting the rate limit
             time.sleep(0.2)
 
         except Exception as e:
 
-            print(f"Erro em {repo} #{pr_number}: {e}")
+            print(f"Error processing {repo} #{pr_number}: {e}")
 
     # -----------------------------
-    # Salva dataset
+    # Save dataset
     # -----------------------------
 
     with open(
@@ -328,9 +330,9 @@ def main():
 
     print()
     print("=" * 60)
-    print("Dataset criado com sucesso!")
-    print(f"PRs processados: {len(dataset)}")
-    print(f"Arquivo salvo em: {OUTPUT_FILE}")
+    print("Dataset created successfully!")
+    print(f"PRs processed: {len(dataset)}")
+    print(f"Output file: {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

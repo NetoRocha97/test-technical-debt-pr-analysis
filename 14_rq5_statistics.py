@@ -1,3 +1,4 @@
+
 import json
 import pandas as pd
 
@@ -8,17 +9,17 @@ OUTPUT_FILE = "results/rq5_sonarqube_comparison.csv"
 
 
 # =====================================================
-# CARREGA DADOS
+# LOAD DATA
 # =====================================================
 
-print("Lendo resultados da LLM...")
+print("Loading LLM results...")
 
-with open(LLM_FILE, encoding="utf8") as f:
-    llm_results = json.load(f)
+with open(LLM_FILE, encoding="utf8") as file:
+    llm_results = json.load(file)
 
-print(f"PRs LLM: {len(llm_results)}")
+print(f"LLM PRs: {len(llm_results)}")
 
-print("Lendo issues do SonarQube...")
+print("Loading SonarQube issues...")
 
 sonar = pd.read_csv(SONAR_FILE)
 
@@ -34,27 +35,27 @@ sonar["rule"] = (
     .str.strip()
 )
 
-# Remove repetições da mesma regra na mesma PR
+# Remove duplicate occurrences of the same rule within a PR
 sonar = sonar.drop_duplicates(
     subset=["repo", "pr_number", "rule"]
 )
 
 
 # =====================================================
-# REGRAS DA LLM
+# LLM RULES
 # =====================================================
 
 llm_rules = {}
 
 for pr in llm_results:
 
-    chave_pr = (
+    pr_key = (
         pr["repo"],
         int(pr["pr_number"])
     )
 
-    if chave_pr not in llm_rules:
-        llm_rules[chave_pr] = {}
+    if pr_key not in llm_rules:
+        llm_rules[pr_key] = {}
 
     for item in pr.get(
         "sonarqube_rules_discussed",
@@ -65,27 +66,26 @@ for pr in llm_results:
             item["rule"]
         ).strip()
 
-        # Se a mesma regra aparecer várias vezes,
-        # mantemos apenas uma entrada.
-        if rule not in llm_rules[chave_pr]:
+        # Keep only one entry when the same rule appears multiple times
+        if rule not in llm_rules[pr_key]:
 
-            evidencias = item.get(
+            evidence_items = item.get(
                 "evidence",
                 []
             )
 
-            comentarios = []
+            comments = []
 
-            for evidence in evidencias:
+            for evidence in evidence_items:
 
-                comentarios.append(
+                comments.append(
                     evidence.get(
                         "comment",
                         ""
                     )
                 )
 
-            llm_rules[chave_pr][rule] = {
+            llm_rules[pr_key][rule] = {
 
                 "mentioned":
                     item["mentioned"],
@@ -98,18 +98,18 @@ for pr in llm_results:
 
                 "discussion":
                     " | ".join(
-                        c for c in comentarios
-                        if c
+                        comment for comment in comments
+                        if comment
                     )
 
             }
 
 
 # =====================================================
-# COMPARAÇÃO SONARQUBE × LLM
+# SONARQUBE × LLM COMPARISON
 # =====================================================
 
-resultados = []
+results = []
 
 for _, row in sonar.iterrows():
 
@@ -121,20 +121,20 @@ for _, row in sonar.iterrows():
 
     rule = row["rule"]
 
-    chave_pr = (
+    pr_key = (
         repo,
         pr_number
     )
 
-    regra_llm = (
+    llm_rule = (
         llm_rules
-        .get(chave_pr, {})
+        .get(pr_key, {})
         .get(rule)
     )
 
-    if regra_llm is None:
+    if llm_rule is None:
 
-        resultados.append({
+        results.append({
 
             "repo": repo,
 
@@ -157,7 +157,7 @@ for _, row in sonar.iterrows():
 
     else:
 
-        resultados.append({
+        results.append({
 
             "repo": repo,
 
@@ -166,30 +166,30 @@ for _, row in sonar.iterrows():
             "sonarqube_rule": rule,
 
             "llm_mentioned":
-                regra_llm["mentioned"],
+                llm_rule["mentioned"],
 
             "mention_type":
-                regra_llm["mention_type"],
+                llm_rule["mention_type"],
 
             "relationship":
-                regra_llm["relationship"],
+                llm_rule["relationship"],
 
             "discussion":
-                regra_llm["discussion"]
+                llm_rule["discussion"]
 
         })
 
 
-resultado = pd.DataFrame(
-    resultados
+result = pd.DataFrame(
+    results
 )
 
 
 # =====================================================
-# SALVA TABELA DETALHADA
+# SAVE DETAILED TABLE
 # =====================================================
 
-resultado.to_csv(
+result.to_csv(
     OUTPUT_FILE,
     index=False,
     encoding="utf-8-sig"
@@ -197,7 +197,7 @@ resultado.to_csv(
 
 
 # =====================================================
-# ESTATÍSTICAS
+# STATISTICS
 # =====================================================
 
 print()
@@ -207,48 +207,48 @@ print("=" * 70)
 
 print()
 print(
-    f"PRs finais analisados : "
+    f"Final PRs analyzed    : "
     f"{len(llm_results)}"
 )
 
 print(
-    f"PR + regra únicos    : "
-    f"{len(resultado)}"
+    f"Unique PR-rule pairs  : "
+    f"{len(result)}"
 )
 
 print()
-print("Relacionamentos:")
+print("Relationships:")
 
-contagem = (
-    resultado["relationship"]
+counts = (
+    result["relationship"]
     .value_counts()
 )
 
 print(
-    contagem.to_string()
+    counts.to_string()
 )
 
 print()
-print("Percentuais:")
+print("Percentages:")
 
-percentuais = (
-    resultado["relationship"]
+percentages = (
+    result["relationship"]
     .value_counts(
         normalize=True
     ) * 100
 )
 
-for categoria, percentual in percentuais.items():
+for category, percentage in percentages.items():
 
     print(
-        f"{categoria:20s}: "
-        f"{percentual:.2f}%"
+        f"{category:20s}: "
+        f"{percentage:.2f}%"
     )
 
 print()
 print("=" * 70)
 
 print(
-    f"\nArquivo salvo em: "
+    f"\nFile saved to: "
     f"{OUTPUT_FILE}"
 )

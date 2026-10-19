@@ -1,3 +1,4 @@
+
 """
 build_prompt.py
 
@@ -7,8 +8,9 @@ Utilities for constructing the messages sent to the LLM.
 from pathlib import Path
 from typing import Any
 
+
 # =====================================================
-# Prompt resources
+# PROMPT RESOURCES
 # =====================================================
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -28,7 +30,7 @@ def load_protocol() -> str:
 
 
 # =====================================================
-# Formatting
+# FORMATTING
 # =====================================================
 
 def format_review_threads(pr: dict[str, Any]) -> str:
@@ -74,7 +76,7 @@ def format_issue_comments(pr: dict[str, Any]) -> str:
 
 
 # =====================================================
-# User message
+# USER MESSAGE
 # =====================================================
 
 def build_user_message(pr: dict[str, Any]) -> str:
@@ -142,7 +144,7 @@ Message:
 
 
 # =====================================================
-# Messages
+# MESSAGE CONSTRUCTION
 # =====================================================
 
 def build_messages(pr: dict[str, Any]) -> list[dict[str, str]]:
